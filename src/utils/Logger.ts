@@ -6,7 +6,7 @@ export default class Logger {
   private debugToDev: boolean;
   private developerId: string;
   private client: Client;
-  
+
   constructor(client: Client) {
     this.debug = process.env.DEBUG === 'true';
     this.debugToDev = process.env.DEBUG_TO_DEV === 'true';

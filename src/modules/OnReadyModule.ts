@@ -1,7 +1,7 @@
 import { Client, Collection } from 'discord.js';
 import { ClientExtended, CommandData } from '../types';
 
-export class InitializerModule {
+export class OnReadyModule {
   private client: ClientExtended;
 
   constructor(client: ClientExtended) {
@@ -11,7 +11,7 @@ export class InitializerModule {
   async initialize(): Promise<void> {
     try {
       this.client.once('ready', async () => {
-        this.client.loggerModule.info('InitializerModule', 'Inicializando BOT');
+        this.client.loggerModule.info('OnReadyModule', 'Inicializando BOT');
 
         const { discriminator, username } = this.client.user || {};
         const guildCount = this.client.guilds.cache.size;
@@ -29,66 +29,66 @@ export class InitializerModule {
         const buttonsCount = this.client.buttons?.size || 0;
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('InitializerModule', `🚀 CACAU-BOT V2 ONLINE 🚀`);
+        this.client.loggerModule.info('OnReadyModule', `🚀 CACAU-BOT V2 ONLINE 🚀`);
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('InitializerModule', `👤 Bot: ${botName}`);
-        this.client.loggerModule.info('InitializerModule', `🏠 Servidores: ${guildCount}`);
-        this.client.loggerModule.info('InitializerModule', `👥 Usuários: ${userCount}`);
-        this.client.loggerModule.info('InitializerModule', `⏰ Status: Online ✅`);
+        this.client.loggerModule.info('OnReadyModule', `👤 Bot: ${botName}`);
+        this.client.loggerModule.info('OnReadyModule', `🏠 Servidores: ${guildCount}`);
+        this.client.loggerModule.info('OnReadyModule', `👥 Usuários: ${userCount}`);
+        this.client.loggerModule.info('OnReadyModule', `⏰ Status: Online ✅`);
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('InitializerModule', `📍 SERVIDORES ATIVOS 📍`);
+        this.client.loggerModule.info('OnReadyModule', `📍 SERVIDORES ATIVOS 📍`);
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        guildList.map(guild => this.client.loggerModule.info('InitializerModule', `${guild}`));
+        guildList.map(guild => this.client.loggerModule.info('OnReadyModule', `${guild}`));
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('InitializerModule', `🗄️  Database: Conectado`);
+        this.client.loggerModule.info('OnReadyModule', `🗄️  Database: Conectado`);
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `⚡Commands: ${commandsCount || 0} carregados`,
         );
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `🔘 Buttons: ${buttonsCount} carregados`,
         );
 
-        this.client.loggerModule.info('InitializerModule', `🎯 Interactions: Ativo`);
+        this.client.loggerModule.info('OnReadyModule', `🎯 Interactions: Ativo`);
 
-        this.client.loggerModule.info('InitializerModule', `🎨 Embeds: Pronto`);
+        this.client.loggerModule.info('OnReadyModule', `🎨 Embeds: Pronto`);
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `🎉 CACAU-BOT está online e operacional! 🎉`,
         );
         this.client.loggerModule.info(
-          'InitializerModule',
+          'OnReadyModule',
           `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
@@ -98,7 +98,7 @@ export class InitializerModule {
       });
 
     } catch (error) {
-      this.client.loggerModule.error('InitializerModule', `Erro ao inicializar o BOT: ${error}`);
+      this.client.loggerModule.error('OnReadyModule', `Erro ao inicializar o BOT: ${error}`);
       process.exit(1);
     }
   }

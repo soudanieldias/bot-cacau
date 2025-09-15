@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { ClientExtended } from './types';
 import { intentsList, partialsList } from './config';
-import { InitializerModule, LoggerModule } from './modules';
+import { OnReadyModule, LoggerModule } from './modules';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,11 +25,16 @@ export default class App {
     // Initialize modules
     this.client.loggerModule = new LoggerModule(this.client);
   }
+
+  private async initializeModules(): Promise<void> {
+    new OnReadyModule(this.client).initialize();
+
+  }
   
   public async start(): Promise<void> {
     try {
       await this.client.login(this.token);
-      await new InitializerModule(this.client).initialize();
+      await this.initializeModules();
     } catch (error) {
       this.client.loggerModule.error('Ocorreu um erro ao inicializar o BOT:', error);
       process.exit(1);

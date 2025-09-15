@@ -2,9 +2,7 @@ import { Client, Collection } from 'discord.js';
 import { ClientExtended, CommandData } from '../types';
 
 export class OnReadyModule {
-  private client: ClientExtended;
-
-  constructor(client: ClientExtended) {
+  constructor(private client: ClientExtended) {
     this.client = client;
   }
 

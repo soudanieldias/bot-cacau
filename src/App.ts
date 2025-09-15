@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { ClientExtended } from './types';
 import { intentsList, partialsList } from './config';
-import { OnReadyModule, LoggerModule } from './modules';
+import { CommandModule, LoggerModule, OnReadyModule } from './modules';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,7 +27,8 @@ export default class App {
   }
 
   private async initializeModules(): Promise<void> {
-    new OnReadyModule(this.client).initialize();
+    await new OnReadyModule(this.client).initialize();
+    await new CommandModule(this.client).initialize();
 
   }
   

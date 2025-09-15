@@ -1,2 +1,3 @@
-export * from './OnReadyModule';
+export * from './CommandModule';
 export * from './LoggerModule';
+export * from './OnReadyModule';

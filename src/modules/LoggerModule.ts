@@ -1,7 +1,7 @@
 import { Client, EmbedBuilder } from 'discord.js';
 import colors from 'colors';
 
-export default class Logger {
+export class LoggerModule {
   private debug: boolean;
   private debugToDev: boolean;
   private developerId: string;
@@ -14,6 +14,7 @@ export default class Logger {
   }
 
   async info(module: string, msg: string): Promise<void> {
+
     if (this.debug) return console.log(colors.green(`[INFO/${module}]`), msg);
     if (this.debugToDev && this.developerId) {
       await this.sendToDev(module, msg);

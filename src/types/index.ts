@@ -3,10 +3,12 @@ import {
   CacheType,
   ChatInputCommandInteraction,
   Client,
+  ModalSubmitInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
+import { LoggerModule } from '../modules';
 
 export interface CommandData {
   data:
@@ -21,6 +23,22 @@ export interface CommandData {
   ) => Promise<void>;
 }
 
+export interface ModalData {
+  customId: string;
+  execute: (
+    client: Client<true>,
+    interaction: ModalSubmitInteraction<CacheType>,
+  ) => Promise<void>;
+}
+
 export type ClientExtended = Client & {
+  // Lists/items:
+  buttons: Map<string, { execute: Function; customId: string }>;
   commands: Map<string, CommandData>;
+  modals: Map<string, ModalData>;
+  slashCommands: Map<string, CommandData>;
+
+  // Modules:
+  interactionModule: InteractionModule;
+  loggerModule: LoggerModule;
 };

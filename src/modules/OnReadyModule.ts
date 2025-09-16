@@ -8,7 +8,7 @@ export class OnReadyModule {
 
   async initialize(): Promise<void> {
     try {
-      this.client.once('ready', async () => {
+      this.client.once('clientReady', async () => {
         this.client.loggerModule.info('OnReadyModule', 'Inicializando BOT');
 
         const { discriminator, username } = this.client.user || {};

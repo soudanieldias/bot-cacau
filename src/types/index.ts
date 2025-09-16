@@ -8,7 +8,7 @@ import {
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { LoggerModule } from '../modules';
+import { ActivityModule, InteractionModule, LoggerModule } from '../modules';
 
 export interface CommandData {
   data:
@@ -39,6 +39,7 @@ export type ClientExtended = Client & {
   slashCommands: Map<string, CommandData>;
 
   // Modules:
+  activityModule: ActivityModule;
   interactionModule: InteractionModule;
   loggerModule: LoggerModule;
 };

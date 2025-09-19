@@ -27,6 +27,7 @@ export default class App {
     // Initialize custom properties
     this.client.slashCommands = new Map();
     this.client.modals = new Map();
+    this.client.buttons = new Map();
 
     // Initialize modules
     this.client.loggerModule = new LoggerModule(this.client);

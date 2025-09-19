@@ -4,6 +4,7 @@ import {
   PermissionFlagsBits,
   Client,
   ChatInputCommandInteraction,
+  MessageFlags,
 } from 'discord.js';
 import { CommandData } from '../../types';
 
@@ -32,7 +33,7 @@ export default (): CommandData => ({
         .setColor('Blurple')
         .setDescription(message);
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
     }
 
     if (avatar.contentType !== 'image/gif')

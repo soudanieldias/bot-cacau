@@ -52,7 +52,7 @@ export class CommandModule {
           if (!name || !description) {
             this.client.loggerModule.warn(
               'CommandModule',
-              `❌ Comando incompleto em ${filePath} - nome: "${name}", descrição: "${description}"`,
+              `❌ Comando incompleto em ${filePath} - nome: '${name}', descrição: '${description}'`,
             );
             skippedCommands++;
             continue;

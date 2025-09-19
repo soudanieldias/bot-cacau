@@ -12,7 +12,10 @@ export default (): CommandData => ({
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
     if(interaction.isRepliable()) {
-      await interaction.reply({ content: 'Pong!', flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: `Pong!\n${client.ws.ping}ms!`,
+        flags: MessageFlags.Ephemeral
+      });
     }
   }
 });

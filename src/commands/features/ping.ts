@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, Client, MessageFlags, SlashCommandBuilder } from "discord.js";
-import { CommandData } from "../../types";
+import { ChatInputCommandInteraction, Client, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()

@@ -2,7 +2,7 @@ import { Client, Collection, Events, Interaction, MessageFlags } from 'discord.j
 import { CommandData, ClientExtended } from '../types';
 
 export class InteractionModule {
-  constructor(private client: ClientExtended, private slashCommands: Map<string, CommandData>) {}
+  constructor(private client: ClientExtended) {}
 
   initialize(
   ): void {
@@ -34,7 +34,7 @@ export class InteractionModule {
 
         // Slash Command Handling
         if (interaction.isChatInputCommand()) {
-          const command = this.slashCommands.get(interaction.commandName);
+          const command = this.client.slashCommands.get(interaction.commandName);
 
           if (!command) {
             return interaction.reply({

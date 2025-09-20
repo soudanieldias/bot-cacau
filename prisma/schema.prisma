@@ -1,0 +1,38 @@
+// Schema Prisma minimal para o bot
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Guilds {
+  id       String  @id
+  name     String
+  iconURL  String?
+  bannerURL String?
+}
+
+model Users {
+  id       String  @id
+  username String
+  points   Int     @default(0)
+}
+
+model Settings {
+  id                      String  @id
+  ownerId                 String?
+  staffChannelId          String?
+  ticketChannelId         String?
+  announcesChannelId      String?
+  suggestionsChannelId    String?
+  modRoleId               String?
+  ticketCategoryId        String?
+  ticketLogsChannelId     String?
+  ticketRoleId            String?
+  ticketTitle             String?
+  ticketButtonName        String?
+  ticketDescription       String?
+}

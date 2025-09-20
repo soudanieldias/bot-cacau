@@ -34,14 +34,12 @@ export default (): CommandData => ({
   async execute(
     client: Client<true>,
     interaction: ChatInputCommandInteraction
-  ): Promise<void> {
+  ): Promise<any> {
     try {
-      const hasAdminRole = interaction.memberPermissions?.has([PermissionFlagsBits.Administrator]);
+      const hasAdminRole = interaction
+        .memberPermissions?.has([PermissionFlagsBits.Administrator]);
 
-      if (!hasAdminRole) {
-        interaction.reply('ERRO: Não Autorizado!!!');
-        return;
-      }
+      if (!hasAdminRole) return interaction.reply('ERRO: Não Autorizado!!!');
 
       const CHANNEL_ID = interaction.options.get('channel')?.value;
       const MESSAGE_ID = interaction.options.get('messageid')?.value;

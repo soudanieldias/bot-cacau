@@ -4,6 +4,7 @@ import { intentsList, partialsList } from './config';
 import {
   ActivityModule,
   CommandModule,
+  DatabaseModule,
   InteractionModule,
   LoggerModule,
   OnReadyModule
@@ -32,12 +33,14 @@ export default class App {
     // Initialize modules
     this.client.loggerModule = new LoggerModule(this.client);
     this.client.activityModule = new ActivityModule(this.client);
+    this.client.databaseModule = new DatabaseModule(this.client);
   }
 
   private async initializeModules(): Promise<void> {
     await new OnReadyModule(this.client).initialize();
     await new CommandModule(this.client).initialize();
-    await new InteractionModule(this.client, this.client.slashCommands).initialize();
+    await new InteractionModule(this.client).initialize();
+    this.client.databaseModule.initialize();
   }
 
   public async start(): Promise<void> {

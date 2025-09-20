@@ -8,7 +8,12 @@ import {
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { ActivityModule, InteractionModule, LoggerModule } from '../modules';
+import {
+  ActivityModule,
+  DatabaseModule,
+  InteractionModule,
+  LoggerModule
+} from '../modules';
 
 export interface CommandData {
   data:
@@ -42,4 +47,5 @@ export type ClientExtended = Client & {
   activityModule: ActivityModule;
   interactionModule: InteractionModule;
   loggerModule: LoggerModule;
+  databaseModule: DatabaseModule;
 };

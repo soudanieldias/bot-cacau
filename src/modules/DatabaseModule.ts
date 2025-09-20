@@ -31,6 +31,7 @@ export class DatabaseModule {
         id: guild.id,
         name: guild.name,
         iconURL: guild.iconURL() || null,
+        bannerURL: guild.bannerURL() || null,
       }));
 
       for (const server of servers) {

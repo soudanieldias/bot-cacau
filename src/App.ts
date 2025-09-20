@@ -48,7 +48,7 @@ export default class App {
       await this.initializeModules();
     } catch (error) {
       this.client.loggerModule.error(
-        'Main',
+        'AppStart',
         `Ocorreu um erro ao iniciar o bot: ${error}`,
       );
       process.exit(1);

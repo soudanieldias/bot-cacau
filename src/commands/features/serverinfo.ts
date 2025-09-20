@@ -1,9 +1,9 @@
 import {
-    ChatInputCommandInteraction,
-    Client,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandBuilder,
+  ChatInputCommandInteraction,
+  Client,
+  EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
 } from 'discord.js';
 import { CommandData } from '../../types';
 
@@ -14,7 +14,10 @@ export default (): CommandData => ({
     .setDefaultMemberPermissions(PermissionFlagsBits.UseApplicationCommands),
   categories: ['help'],
 
-  execute: async (client:Client<true>, interaction: ChatInputCommandInteraction) => {
+  execute: async (
+    client: Client<true>,
+    interaction: ChatInputCommandInteraction,
+  ) => {
     try {
       const guildMembers = await interaction.guild!.members.fetch();
       const membersCount = guildMembers.filter(member => !member.user.bot).size;
@@ -31,7 +34,7 @@ export default (): CommandData => ({
             { name: 'Membros no Servidor: ', value: `${membersCount}` },
             {
               name: 'Bots no Servidor: ',
-              value: `${(guildMembers.size - membersCount) || 0}`,
+              value: `${guildMembers.size - membersCount || 0}`,
             },
             {
               name: 'Location: ',
@@ -42,7 +45,7 @@ export default (): CommandData => ({
               name: 'Created',
               value: `${interaction.guild.createdAt.toLocaleString()}`,
               inline: true,
-            }
+            },
           )
           .setTimestamp()
           .setFooter({

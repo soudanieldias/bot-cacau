@@ -1,4 +1,9 @@
-import { ChatInputCommandInteraction, Client, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  Client,
+  MessageFlags,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { CommandData } from '../../types';
 
 export default (): CommandData => ({
@@ -9,13 +14,13 @@ export default (): CommandData => ({
 
   async execute(
     client: Client<true>,
-    interaction: ChatInputCommandInteraction
+    interaction: ChatInputCommandInteraction,
   ): Promise<void> {
-    if(interaction.isRepliable()) {
+    if (interaction.isRepliable()) {
       await interaction.reply({
         content: `Pong!\n${client.ws.ping}ms!`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
-  }
+  },
 });

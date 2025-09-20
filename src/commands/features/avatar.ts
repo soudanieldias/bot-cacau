@@ -1,4 +1,8 @@
-import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import {
+  EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { CommandData } from '../../types';
 
 export default (): CommandData => ({
@@ -10,7 +14,7 @@ export default (): CommandData => ({
       option
         .setName('user')
         .setDescription('O usuário cujo avatar você quer ver')
-        .setRequired(false)
+        .setRequired(false),
     ),
   categories: ['features'],
 
@@ -30,5 +34,4 @@ export default (): CommandData => ({
       console.error(error);
     }
   },
-  
 });

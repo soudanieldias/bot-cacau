@@ -28,39 +28,56 @@ export class OnReadyModule {
 
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('OnReadyModule', `🚀 CACAU-BOT V2 ONLINE 🚀`);
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `🚀 CACAU-BOT V2 ONLINE 🚀`,
+        );
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
         this.client.loggerModule.info('OnReadyModule', `👤 Bot: ${botName}`);
-        this.client.loggerModule.info('OnReadyModule', `🏠 Servidores: ${guildCount}`);
-        this.client.loggerModule.info('OnReadyModule', `👥 Usuários: ${userCount}`);
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `🏠 Servidores: ${guildCount}`,
+        );
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `👥 Usuários: ${userCount}`,
+        );
         this.client.loggerModule.info('OnReadyModule', `⏰ Status: Online ✅`);
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
-
-        this.client.loggerModule.info('OnReadyModule', `📍 SERVIDORES ATIVOS 📍`);
 
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `📍 SERVIDORES ATIVOS 📍`,
         );
-
-        guildList.map(guild => this.client.loggerModule.info('OnReadyModule', `${guild}`));
 
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
-        this.client.loggerModule.info('OnReadyModule', `🗄️  Database: Conectado`);
+        guildList.map(guild =>
+          this.client.loggerModule.info('OnReadyModule', `${guild}`),
+        );
+
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        );
+
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `🗄️  Database: Conectado`,
+        );
 
         this.client.loggerModule.info(
           'OnReadyModule',
@@ -72,13 +89,16 @@ export class OnReadyModule {
           `🔘 Buttons: ${buttonsCount} carregados`,
         );
 
-        this.client.loggerModule.info('OnReadyModule', `🎯 Interactions: Ativo`);
+        this.client.loggerModule.info(
+          'OnReadyModule',
+          `🎯 Interactions: Ativo`,
+        );
 
         this.client.loggerModule.info('OnReadyModule', `🎨 Embeds: Pronto`);
 
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
         this.client.loggerModule.info(
@@ -87,16 +107,18 @@ export class OnReadyModule {
         );
         this.client.loggerModule.info(
           'OnReadyModule',
-          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
         );
 
         // TO-DO: Initialize Database & Interaction modules here
-        // await this.client.databaseModule.initialize();
+        await this.client.databaseModule.initialize();
         // await this.client.interactionModule.initialize(client as Client<true>, client.slashCommands as Collection<string, CommandData>);
       });
-
     } catch (error) {
-      this.client.loggerModule.error('OnReadyModule', `Erro ao inicializar o BOT: ${error}`);
+      this.client.loggerModule.error(
+        'OnReadyModule',
+        `Erro ao inicializar o BOT: ${error}`,
+      );
       process.exit(1);
     }
   }

@@ -1,11 +1,11 @@
-import { CommandData } from "../../types";
+import { CommandData } from '../../types';
 
 import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
-  PermissionFlagsBits
+  PermissionFlagsBits,
 } from 'discord.js';
 
 export default (): CommandData => ({
@@ -17,14 +17,14 @@ export default (): CommandData => ({
       option
         .setName('user')
         .setDescription('O usuário cujo perfil você quer ver')
-        .setRequired(false)
+        .setRequired(false),
     ),
   categories: ['features'],
-  
-    async execute(
-      client: Client<true>,
-      interaction: ChatInputCommandInteraction
-    ): Promise<void> {
+
+  async execute(
+    client: Client<true>,
+    interaction: ChatInputCommandInteraction,
+  ): Promise<void> {
     const user = interaction.options.getUser('user') || interaction.user;
     const avatarUrl = user.displayAvatarURL({ size: 512 });
 
@@ -44,7 +44,7 @@ export default (): CommandData => ({
           name: 'Created',
           value: `${interaction.guild?.createdAt.toLocaleString()}`,
           inline: true,
-        }
+        },
       )
       .setTimestamp()
       .setFooter({

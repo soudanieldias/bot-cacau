@@ -14,14 +14,14 @@ export default (): CommandData => ({
     .setDescription('Mude avatar do bot')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addAttachmentOption(option =>
-      option
-        .setName('avatar')
-        .setDescription('O avatar')
-        .setRequired(true)
+      option.setName('avatar').setDescription('O avatar').setRequired(true),
     ),
   categories: ['dev'],
 
-  async execute (client: Client<true>, interaction: ChatInputCommandInteraction): Promise<void> {
+  async execute(
+    client: Client<true>,
+    interaction: ChatInputCommandInteraction,
+  ): Promise<void> {
     const isDeveloper = interaction.user.id === process.env.DEV_ID;
 
     if (!isDeveloper) interaction.reply('Erro: Não Autorizado!!!');
@@ -33,7 +33,10 @@ export default (): CommandData => ({
         .setColor('Blurple')
         .setDescription(message);
 
-      await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
     if (avatar.contentType !== 'image/gif')

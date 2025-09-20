@@ -10,7 +10,8 @@ export class CommandModule {
   public async initialize(): Promise<void> {
     try {
       this.client.loggerModule.info(
-        'CommandModule', 'Carregando módulo de comandos.'
+        'CommandModule',
+        'Carregando módulo de comandos.',
       );
 
       const rest = new REST({ version: '10' }).setToken(this.client.token!);
@@ -33,10 +34,15 @@ export class CommandModule {
 
       for await (const filePath of commandFiles) {
         try {
-          const modulePath = filePath.startsWith('.') ? filePath : `../../${filePath}`;
+          const modulePath = filePath.startsWith('.')
+            ? filePath
+            : `../../${filePath}`;
           const commandModule = await import(modulePath);
           const commandExport = commandModule.default || commandModule;
-          const command = typeof commandExport === 'function' ? commandExport() : commandExport;
+          const command =
+            typeof commandExport === 'function'
+              ? commandExport()
+              : commandExport;
 
           if (!command || !command.data) {
             this.client.loggerModule.error(
@@ -96,25 +102,24 @@ export class CommandModule {
       }
 
       if (restCommands.length > 0) {
-        await rest.put(
-          Routes.applicationCommands(this.client.user!.id),
-          { body: restCommands }
-        );
+        await rest.put(Routes.applicationCommands(this.client.user!.id), {
+          body: restCommands,
+        });
 
         this.client.loggerModule.info(
           'CommandModule',
-          `🎉 ${restCommands.length} comandos registrados no Discord com sucesso!`
+          `🎉 ${restCommands.length} comandos registrados no Discord com sucesso!`,
         );
       }
 
       this.client.loggerModule.info(
         'CommandModule',
-        `📊 Resumo: ${loadedCommands} carregados, ${skippedCommands} ignorados, ${duplicateCommands} duplicados`
+        `📊 Resumo: ${loadedCommands} carregados, ${skippedCommands} ignorados, ${duplicateCommands} duplicados`,
       );
     } catch (error) {
       this.client.loggerModule.error(
         'CommandModule',
-        `❌ Erro ao carregar módulo de comandos: ${error}`
+        `❌ Erro ao carregar módulo de comandos: ${error}`,
       );
     }
   }

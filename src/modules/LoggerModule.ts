@@ -14,7 +14,6 @@ export class LoggerModule {
   }
 
   async info(module: string, msg: string): Promise<void> {
-
     if (this.debug) return console.log(colors.green(`[INFO/${module}]`), msg);
     if (this.debugToDev && this.developerId) {
       await this.sendToDev(module, msg);

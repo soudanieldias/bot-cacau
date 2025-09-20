@@ -1,10 +1,16 @@
-import { ActivityType, CacheType, ChatInputCommandInteraction, MessageFlags, PresenceStatusData } from 'discord.js';
+import {
+  ActivityType,
+  CacheType,
+  ChatInputCommandInteraction,
+  MessageFlags,
+  PresenceStatusData,
+} from 'discord.js';
 import { ClientExtended } from '../types';
 
 export class ActivityModule {
   constructor(private client: ClientExtended) {
     client.once('clientReady', () => {
-      this.setDefaultActivity()
+      this.setDefaultActivity();
     });
   }
 

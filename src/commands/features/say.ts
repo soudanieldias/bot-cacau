@@ -6,7 +6,7 @@ import {
   PermissionFlagsBits,
   Role,
   SlashCommandBuilder,
-  TextChannel
+  TextChannel,
 } from 'discord.js';
 import { CommandData } from '../../types';
 
@@ -14,24 +14,28 @@ export default (): CommandData => ({
   data: new SlashCommandBuilder()
     .setName('say')
     .setDescription('Broadcast a message to specified channel [STAFF]')
-    .addChannelOption(channel => (
-      channel.setName('channel')
-      .setDescription('Canal onde deseja enviar a Mensagem')
-      .setRequired(true)
-    ))
-    .addStringOption(message => (
-      message.setName('message')
-      .setDescription('Mensagem que será enviada no canal Selecionado')
-      .setRequired(true)
-    )),
+    .addChannelOption(channel =>
+      channel
+        .setName('channel')
+        .setDescription('Canal onde deseja enviar a Mensagem')
+        .setRequired(true),
+    )
+    .addStringOption(message =>
+      message
+        .setName('message')
+        .setDescription('Mensagem que será enviada no canal Selecionado')
+        .setRequired(true),
+    ),
   categories: ['features'],
-        
+
   async execute(
     client: Client<true>,
-    interaction: ChatInputCommandInteraction
+    interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {
-      const hasAdminRole = interaction.memberPermissions?.has([PermissionFlagsBits.Administrator]);
+      const hasAdminRole = interaction.memberPermissions?.has([
+        PermissionFlagsBits.Administrator,
+      ]);
       const CHANNEL_ID = interaction.options.get('channel')?.value;
       const MESSAGE_CONTENT = interaction.options.get('message')?.value;
 
@@ -42,11 +46,10 @@ export default (): CommandData => ({
       const channel = await interaction.guild?.channels.fetch(`${CHANNEL_ID}`);
 
       await (channel as TextChannel).send(`${MESSAGE_CONTENT}`);
-      
-      return interaction.reply('Mensagem enviada com Sucesso!');
 
+      return interaction.reply('Mensagem enviada com Sucesso!');
     } catch (error) {
       console.error('[SAY] Error: ', error);
     }
-  }
+  },
 });

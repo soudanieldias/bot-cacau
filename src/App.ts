@@ -7,7 +7,7 @@ import {
   DatabaseModule,
   InteractionModule,
   LoggerModule,
-  OnReadyModule
+  OnReadyModule,
 } from './modules';
 import dotenv from 'dotenv';
 
@@ -40,7 +40,6 @@ export default class App {
     await new OnReadyModule(this.client).initialize();
     await new CommandModule(this.client).initialize();
     await new InteractionModule(this.client).initialize();
-    this.client.databaseModule.initialize();
   }
 
   public async start(): Promise<void> {
@@ -48,7 +47,10 @@ export default class App {
       await this.client.login(this.token);
       await this.initializeModules();
     } catch (error) {
-      this.client.loggerModule.error('Main', `Ocorreu um erro ao iniciar o bot: ${error}`);
+      this.client.loggerModule.error(
+        'Main',
+        `Ocorreu um erro ao iniciar o bot: ${error}`,
+      );
       process.exit(1);
     }
   }

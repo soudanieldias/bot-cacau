@@ -8,6 +8,7 @@ import {
   InteractionModule,
   LoggerModule,
   OnReadyModule,
+  TicketModule,
 } from './modules';
 import dotenv from 'dotenv';
 
@@ -34,6 +35,7 @@ export default class App {
     this.client.loggerModule = new LoggerModule(this.client);
     this.client.activityModule = new ActivityModule(this.client);
     this.client.databaseModule = new DatabaseModule(this.client);
+    this.client.ticketModule = new TicketModule(this.client);
   }
 
   private async initializeModules(): Promise<void> {

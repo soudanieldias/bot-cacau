@@ -13,6 +13,7 @@ import {
   DatabaseModule,
   InteractionModule,
   LoggerModule,
+  TicketModule,
 } from '../modules';
 
 export type ClientExtended = Client & {
@@ -27,6 +28,7 @@ export type ClientExtended = Client & {
   interactionModule: InteractionModule;
   loggerModule: LoggerModule;
   databaseModule: DatabaseModule;
+  ticketModule: TicketModule;
 };
 
 export interface CommandData {

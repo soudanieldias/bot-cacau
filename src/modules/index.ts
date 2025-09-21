@@ -4,3 +4,4 @@ export * from './DatabaseModule';
 export * from './InteractionModule';
 export * from './LoggerModule';
 export * from './OnReadyModule';
+export * from './TicketModule';

@@ -36,3 +36,42 @@ model Settings {
   ticketButtonName        String?
   ticketDescription       String?
 }
+
+model TicketCategories {
+  id          String @id
+  guildId     String
+  name        String
+  emoji       String?
+  description String?
+  color       String? @default("#2f3136")
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([guildId, name])
+}
+
+model TicketCounters {
+  id          String @id
+  guildId     String
+  counter     Int @default(0)
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([guildId])
+}
+
+model Tickets {
+  id          String @id
+  guildId     String
+  categoryId  String
+  userId      String
+  channelId   String
+  status      String @default("open")
+  ticketNumber Int
+  claimedBy   String? // ID do usuário que fez claim
+  claimedAt   DateTime?
+  createdAt   DateTime @default(now())
+  closedAt    DateTime?
+  
+  @@unique([guildId, categoryId, ticketNumber])
+}

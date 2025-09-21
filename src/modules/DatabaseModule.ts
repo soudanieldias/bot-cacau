@@ -3,15 +3,23 @@ import { PrismaClient } from '@prisma/client';
 
 export class DatabaseModule {
   private readonly prisma: PrismaClient;
+  private settings: any;
 
   constructor(private readonly client: ClientExtended) {
     this.prisma = new PrismaClient();
     this.client.databaseModule = this;
+    this.settings = this.prisma.settings;
   }
 
   async initialize(): Promise<void> {
     try {
       await this.client.loggerModule.info('Database', 'Inicializando...');
+
+      await this.prisma.$connect();
+      await this.client.loggerModule.info(
+        'Database',
+        'Conexão com banco estabelecida',
+      );
 
       await this.populateServers();
 
@@ -179,6 +187,431 @@ export class DatabaseModule {
         'DatabaseModule',
         `Erro ao atualizar configurações: ${error}`,
       );
+    }
+  }
+
+  async upsertTicketSettings(guildId: string, ticketData: any): Promise<void> {
+    try {
+      await this.prisma.settings.upsert({
+        where: { id: guildId },
+        update: ticketData,
+        create: { id: guildId, ...ticketData },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao criar/atualizar configurações de ticket: ${error}`,
+      );
+    }
+  }
+
+  async updateTicketSettings(guildId: string, ticketData: any): Promise<void> {
+    try {
+      await this.prisma.settings.update({
+        where: { id: guildId },
+        data: ticketData,
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao atualizar configurações de ticket: ${error}`,
+      );
+    }
+  }
+
+  async getTicketSettings(guildId: string) {
+    try {
+      return await this.prisma.settings.findUnique({
+        where: { id: guildId },
+        select: {
+          ticketChannelId: true,
+          ticketButtonName: true,
+          ticketCategoryId: true,
+          ticketLogsChannelId: true,
+          ticketRoleId: true,
+          ticketTitle: true,
+          ticketDescription: true,
+          modRoleId: true,
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao obter configurações de ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async createTicketCategory(
+    guildId: string,
+    categoryData: {
+      name: string;
+      emoji?: string;
+      description?: string;
+      color?: string;
+    },
+  ) {
+    try {
+      const category = await this.prisma.ticketCategories.create({
+        data: {
+          id: `${guildId}-${categoryData.name.toLowerCase()}`,
+          guildId,
+          name: categoryData.name,
+          emoji: categoryData.emoji,
+          description: categoryData.description,
+          color: categoryData.color,
+        },
+      });
+
+      await this.prisma.ticketCounters.create({
+        data: {
+          id: `${guildId}-counter`,
+          guildId,
+          counter: 0,
+        },
+      });
+
+      return category;
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao criar categoria de ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getTicketCategories(guildId: string) {
+    try {
+      return await this.prisma.ticketCategories.findMany({
+        where: { guildId, isActive: true },
+        orderBy: { name: 'asc' },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao obter categorias de tickets: ${error}`,
+      );
+      return [];
+    }
+  }
+
+  async getNextTicketNumber(guildId: string) {
+    try {
+      let counter = await this.prisma.ticketCounters.findUnique({
+        where: {
+          guildId,
+        },
+      });
+
+      if (!counter) {
+        counter = await this.prisma.ticketCounters.create({
+          data: {
+            id: `${guildId}-${Date.now()}`,
+            guildId,
+            counter: 0,
+          },
+        });
+      }
+
+      const updatedCounter = await this.prisma.ticketCounters.update({
+        where: {
+          guildId,
+        },
+        data: {
+          counter: counter.counter + 1,
+        },
+      });
+
+      return updatedCounter.counter.toString().padStart(4, '0');
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao obter próximo número do ticket: ${error}`,
+      );
+      return '0001';
+    }
+  }
+
+  async createTicket(
+    guildId: string,
+    ticketData: {
+      categoryId: string;
+      userId: string;
+      channelId: string;
+    },
+  ) {
+    try {
+      const ticketNumber = await this.getNextTicketNumber(guildId);
+
+      const ticket = await this.prisma.tickets.create({
+        data: {
+          id: `${guildId}-${ticketNumber}-${Date.now()}`,
+          guildId,
+          categoryId: ticketData.categoryId,
+          userId: ticketData.userId,
+          channelId: ticketData.channelId,
+          ticketNumber: parseInt(ticketNumber),
+        },
+      });
+
+      return ticket;
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao criar ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getTicketByChannel(channelId: string) {
+    try {
+      return await this.prisma.tickets.findFirst({
+        where: { channelId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao obter ticket por canal: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async updateTicketStatus(ticketId: string, status: string) {
+    try {
+      return await this.prisma.tickets.update({
+        where: { id: ticketId },
+        data: {
+          status,
+          closedAt: status === 'closed' ? new Date() : null,
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao atualizar status do ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async initializeDefaultTicketCategories(guildId: string) {
+    try {
+      const defaultCategories = [
+        {
+          name: 'financeiro',
+          emoji: '💰',
+          description: 'Assuntos financeiros',
+          color: '#00ff00',
+        },
+        {
+          name: 'ajuda',
+          emoji: '❓',
+          description: 'Precisa de ajuda',
+          color: '#0099ff',
+        },
+        {
+          name: 'compra',
+          emoji: '🛒',
+          description: 'Compras e vendas',
+          color: '#ff6600',
+        },
+      ];
+
+      for (const category of defaultCategories) {
+        await this.createTicketCategory(guildId, category);
+      }
+
+      this.client.loggerModule.info(
+        'DatabaseModule',
+        `Categorias padrão de tickets criadas para a guilda ${guildId}`,
+      );
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao inicializar categorias padrão: ${error}`,
+      );
+    }
+  }
+
+  async findExistingTicket(guildId: string, userId: string) {
+    try {
+      const ticket = await this.prisma.tickets.findFirst({
+        where: {
+          guildId,
+          userId,
+          status: 'open',
+        },
+      });
+
+      if (!ticket) {
+        return null;
+      }
+
+      const guild = this.client.guilds.cache.get(guildId);
+      if (!guild) {
+        this.client.loggerModule.warn(
+          'DatabaseModule',
+          `Guild não encontrada: ${guildId}`,
+        );
+        return null;
+      }
+
+      const channel = guild.channels.cache.get(ticket.channelId);
+      if (!channel) {
+        this.client.loggerModule.warn(
+          'DatabaseModule',
+          `Canal do ticket não existe mais: ${ticket.channelId}`,
+        );
+
+        await this.updateTicketStatus(ticket.id, 'closed');
+        this.client.loggerModule.info(
+          'DatabaseModule',
+          `Ticket ${ticket.id} marcado como fechado (canal inexistente)`,
+        );
+
+        return null;
+      }
+
+      return ticket;
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar ticket existente: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getTicketCategory(categoryId: string) {
+    try {
+      return await this.prisma.ticketCategories.findUnique({
+        where: { id: categoryId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao obter categoria: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async updateTicketChannel(ticketId: string, channelId: string) {
+    try {
+      return await this.prisma.tickets.update({
+        where: { id: ticketId },
+        data: { channelId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao atualizar canal do ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async cleanupOrphanedTickets(guildId: string) {
+    try {
+      this.client.loggerModule.info(
+        'DatabaseModule',
+        `Limpando tickets órfãos para guild: ${guildId}`,
+      );
+
+      const guild = this.client.guilds.cache.get(guildId);
+      if (!guild) {
+        this.client.loggerModule.warn(
+          'DatabaseModule',
+          `Guild não encontrada para limpeza: ${guildId}`,
+        );
+        return 0;
+      }
+
+      const openTickets = await this.prisma.tickets.findMany({
+        where: {
+          guildId,
+          status: 'open',
+        },
+      });
+
+      let cleanedCount = 0;
+      for (const ticket of openTickets) {
+        const channel = guild.channels.cache.get(ticket.channelId);
+        if (!channel) {
+          await this.updateTicketStatus(ticket.id, 'closed');
+          cleanedCount++;
+          this.client.loggerModule.info(
+            'DatabaseModule',
+            `Ticket órfão fechado: ${ticket.id}`,
+          );
+        }
+      }
+
+      this.client.loggerModule.info(
+        'DatabaseModule',
+        `${cleanedCount} tickets órfãos limpos`,
+      );
+      return cleanedCount;
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao limpar tickets órfãos: ${error}`,
+      );
+      return 0;
+    }
+  }
+
+  async claimTicket(ticketId: string, claimedBy: string) {
+    try {
+      return await this.prisma.tickets.update({
+        where: { id: ticketId },
+        data: {
+          claimedBy,
+          claimedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao fazer claim do ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async transferTicket(ticketId: string, newClaimedBy: string) {
+    try {
+      return await this.prisma.tickets.update({
+        where: { id: ticketId },
+        data: {
+          claimedBy: newClaimedBy,
+          claimedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao transferir ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getTicketById(ticketId: string) {
+    try {
+      return await this.prisma.tickets.findUnique({
+        where: { id: ticketId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar ticket por ID: ${error}`,
+      );
+      return null;
     }
   }
 }

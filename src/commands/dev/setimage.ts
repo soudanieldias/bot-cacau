@@ -21,14 +21,14 @@ export default (): CommandData => ({
   async execute(
     client: Client<true>,
     interaction: ChatInputCommandInteraction,
-  ): Promise<void> {
+  ): Promise<any> {
     const isDeveloper = interaction.user.id === process.env.DEV_ID;
 
     if (!isDeveloper) interaction.reply('Erro: Não Autorizado!!!');
 
     const avatar = interaction.options.getAttachment('avatar')!;
 
-    async function sendMessage(message) {
+    async function sendMessage(message: any) {
       const embed = new EmbedBuilder()
         .setColor('Blurple')
         .setDescription(message);

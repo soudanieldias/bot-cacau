@@ -1,12 +1,11 @@
-import { CommandData } from '../../types';
-
-import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
   PermissionFlagsBits,
 } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -22,9 +21,9 @@ export default (): CommandData => ({
   categories: ['features'],
 
   async execute(
-    client: Client<true>,
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
-  ): Promise<void> {
+  ): Promise<any> {
     const user = interaction.options.getUser('user') || interaction.user;
     const avatarUrl = user.displayAvatarURL({ size: 512 });
 
@@ -48,8 +47,8 @@ export default (): CommandData => ({
       )
       .setTimestamp()
       .setFooter({
-        text: `${client.user.username}`,
-        iconURL: `${client.user.avatarURL()}`,
+        text: `${client.user?.username}`,
+        iconURL: `${client.user?.avatarURL()}`,
       });
 
     await interaction.reply({ embeds: [embed] });

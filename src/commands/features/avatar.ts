@@ -1,9 +1,10 @@
 import {
+  ChatInputCommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -18,7 +19,10 @@ export default (): CommandData => ({
     ),
   categories: ['features'],
 
-  async execute(_client, interaction) {
+  async execute(
+    client: ClientExtended,
+    interaction: ChatInputCommandInteraction,
+  ): Promise<any> {
     try {
       const user = interaction.options.getUser('user') || interaction.user;
 

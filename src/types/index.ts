@@ -12,29 +12,8 @@ import {
   ActivityModule,
   DatabaseModule,
   InteractionModule,
-  LoggerModule
+  LoggerModule,
 } from '../modules';
-
-export interface CommandData {
-  data:
-    | ApplicationCommandData
-    | SlashCommandBuilder
-    | SlashCommandOptionsOnlyBuilder
-    | SlashCommandSubcommandsOnlyBuilder;
-  categories: string[];
-  execute: (
-    client: Client<true>,
-    interaction: ChatInputCommandInteraction<CacheType>,
-  ) => Promise<void>;
-}
-
-export interface ModalData {
-  customId: string;
-  execute: (
-    client: Client<true>,
-    interaction: ModalSubmitInteraction<CacheType>,
-  ) => Promise<void>;
-}
 
 export type ClientExtended = Client & {
   // Lists/items:
@@ -49,3 +28,24 @@ export type ClientExtended = Client & {
   loggerModule: LoggerModule;
   databaseModule: DatabaseModule;
 };
+
+export interface CommandData {
+  data:
+    | ApplicationCommandData
+    | SlashCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder;
+  categories: string[];
+  execute: (
+    client: ClientExtended,
+    interaction: ChatInputCommandInteraction<CacheType>,
+  ) => Promise<void>;
+}
+
+export interface ModalData {
+  customId: string;
+  execute: (
+    client: ClientExtended,
+    interaction: ModalSubmitInteraction<CacheType>,
+  ) => Promise<void>;
+}

@@ -1,5 +1,10 @@
+import {
+  ChatInputCommandInteraction,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { EmbedBuilder } from '@discordjs/builders';
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { ClientExtended, CommandData } from '../../types';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,7 +13,10 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.UseApplicationCommands),
   categories: ['help'],
 
-  execute: async (client, interaction) => {
+  async execute(
+    client: ClientExtended,
+    interaction: ChatInputCommandInteraction,
+  ): Promise<any> {
     if (!client.user) return;
 
     const embed = new EmbedBuilder()
@@ -16,9 +24,10 @@ module.exports = {
       .setTitle('Comandos Disponíveis:');
 
     client.slashCommands.forEach(cmd => {
+      const commandData = cmd.data as any | CommandData;
       embed.addFields({
-        name: `Name: **${cmd.data.name}**`,
-        value: `Description: ***${cmd.data.description}***\n`,
+        name: `Name: **${commandData.name}**`,
+        value: `Description: ***${commandData.description}***\n`,
       });
     });
 

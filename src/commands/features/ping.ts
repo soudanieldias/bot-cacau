@@ -4,7 +4,7 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -13,9 +13,9 @@ export default (): CommandData => ({
   categories: ['features'],
 
   async execute(
-    client: Client<true>,
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
-  ): Promise<void> {
+  ): Promise<any> {
     if (interaction.isRepliable()) {
       await interaction.reply({
         content: `Pong!\n${client.ws.ping}ms!`,

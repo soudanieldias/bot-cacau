@@ -5,7 +5,7 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -14,10 +14,10 @@ export default (): CommandData => ({
     .setDefaultMemberPermissions(PermissionFlagsBits.UseApplicationCommands),
   categories: ['help'],
 
-  execute: async (
-    client: Client<true>,
+  async execute(
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
-  ) => {
+  ): Promise<any> {
     try {
       const guildMembers = await interaction.guild!.members.fetch();
       const membersCount = guildMembers.filter(member => !member.user.bot).size;

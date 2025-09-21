@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
   TextChannel,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -26,9 +26,9 @@ export default (): CommandData => ({
   categories: ['staff'],
 
   async execute(
-    _client: Client<true>,
+    _client: ClientExtended,
     interaction: ChatInputCommandInteraction,
-  ): Promise<void> {
+  ): Promise<any> {
     try {
       if (interaction.isRepliable()) {
         const hasAdminRole = interaction.memberPermissions?.has([

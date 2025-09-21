@@ -8,7 +8,7 @@ import {
   SlashCommandBuilder,
   TextChannel,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { ClientExtended, CommandData } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -29,7 +29,7 @@ export default (): CommandData => ({
   categories: ['features'],
 
   async execute(
-    client: Client<true>,
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {

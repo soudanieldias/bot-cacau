@@ -1,8 +1,6 @@
 import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
-  Client,
-  CacheType,
   PermissionFlagsBits,
 } from 'discord.js';
 import { ClientExtended, CommandData } from '../../types';

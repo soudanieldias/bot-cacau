@@ -1,11 +1,5 @@
-import {
-  Client,
-  Collection,
-  Events,
-  Interaction,
-  MessageFlags,
-} from 'discord.js';
-import { CommandData, ClientExtended } from '../types';
+import { Events, Interaction, MessageFlags } from 'discord.js';
+import { ClientExtended } from '../types';
 
 export class InteractionModule {
   constructor(private client: ClientExtended) {}
@@ -19,7 +13,7 @@ export class InteractionModule {
           if (interaction.isStringSelectMenu()) {
             switch (interaction.customId) {
               case 'ticket-category-select':
-                const categoryId = interaction.values[0];
+                const categoryId = interaction.values[0]!;
                 return await this.client.ticketModule.createTicketWithCategory(
                   this.client,
                   interaction,

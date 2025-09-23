@@ -1,10 +1,6 @@
 import {
   ChatInputCommandInteraction,
-  Client,
-  CommandInteraction,
-  Message,
   PermissionFlagsBits,
-  Role,
   SlashCommandBuilder,
   TextChannel,
 } from 'discord.js';
@@ -29,7 +25,7 @@ export default (): CommandData => ({
   categories: ['features'],
 
   async execute(
-    client: ClientExtended,
+    _client: ClientExtended,
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {

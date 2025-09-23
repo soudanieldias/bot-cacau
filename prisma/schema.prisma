@@ -1,4 +1,3 @@
-// Schema Prisma minimal para o bot
 generator client {
   provider = "prisma-client-js"
 }
@@ -28,6 +27,8 @@ model Settings {
   ticketChannelId         String?
   announcesChannelId      String?
   suggestionsChannelId    String?
+  upvoteEmoji             String?
+  downvoteEmoji           String?
   modRoleId               String?
   ticketCategoryId        String?
   ticketLogsChannelId     String?
@@ -68,7 +69,7 @@ model Tickets {
   channelId   String
   status      String @default("open")
   ticketNumber Int
-  claimedBy   String? // ID do usuário que fez claim
+  claimedBy   String?
   claimedAt   DateTime?
   createdAt   DateTime @default(now())
   closedAt    DateTime?

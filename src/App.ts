@@ -1,5 +1,5 @@
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { ClientExtended, CommandData } from './types';
+import { Client } from 'discord.js';
+import { ClientExtended } from './types';
 import { intentsList, partialsList } from './config';
 import {
   ActivityModule,
@@ -19,7 +19,7 @@ export default class App {
   private token: string | undefined;
 
   constructor() {
-    this.token = process.env.TOKEN || '';
+    this.token = process.env['TOKEN'] || '';
 
     this.client = new Client({
       intents: intentsList,

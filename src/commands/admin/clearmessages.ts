@@ -1,5 +1,4 @@
 import {
-  Client,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
   SlashCommandBuilder,

@@ -1,19 +1,19 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import {
+  ChatInputCommandInteraction,
+  SlashCommandBuilder,
+  ChannelType,
+} from 'discord.js';
 import { ClientExtended } from '../../types';
-
-const { SlashCommandBuilder, ChannelType } = require('discord.js');
-const { TicketModule } = require('../../modules');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('ticket')
     .setDescription('Sistema de Ticket.')
-    .setDMPermission(false)
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('config')
         .setDescription('Configure a funcionalidade de tickets')
-        .addChannelOption(option =>
+        .addChannelOption((option: any) =>
           option
             .setName('canal')
             .setDescription(
@@ -22,14 +22,14 @@ module.exports = {
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true),
         )
-        .addChannelOption(option =>
+        .addChannelOption((option: any) =>
           option
             .setName('logs')
             .setDescription('Canal que as logs será enviada.')
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true),
         )
-        .addChannelOption(option =>
+        .addChannelOption((option: any) =>
           option
             .setName('categoria')
             .addChannelTypes(ChannelType.GuildCategory)
@@ -38,61 +38,61 @@ module.exports = {
             )
             .setRequired(true),
         )
-        .addStringOption(option =>
+        .addStringOption((option: any) =>
           option
             .setName('botao')
             .setDescription('O nome do botão de abrir tickets.')
             .setRequired(true),
         )
-        .addRoleOption(option =>
+        .addRoleOption((option: any) =>
           option
             .setName('cargo')
             .setDescription('Cargo que podera ver os tickets.')
             .setRequired(true),
         ),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('adduser')
         .setDescription('Adicione um membro a um ticket.')
-        .addUserOption(option =>
+        .addUserOption((option: any) =>
           option
             .setName('membro')
             .setDescription('Membro que será adicionado ao ticket.')
             .setRequired(true),
         ),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('removeuser')
         .setDescription('Remova um membro do ticket.')
-        .addUserOption(option =>
+        .addUserOption((option: any) =>
           option
             .setName('membro')
             .setDescription('Membro que será removido do ticket.')
             .setRequired(true),
         ),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('mencionar')
         .setDescription('Mencione o membro que abriu o ticket em seu privado.'),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('sendmodal')
         .setDescription('Reenvia o modal de tickets no canal atual.'),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('cleanup')
         .setDescription('Limpa tickets órfãos (canais que não existem mais).'),
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand: any) =>
       subcommand
         .setName('transfer')
         .setDescription('Transfere o ticket para outro atendente.')
-        .addUserOption(option =>
+        .addUserOption((option: any) =>
           option
             .setName('atendente')
             .setDescription('Atendente que receberá o ticket.')

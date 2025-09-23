@@ -1,5 +1,4 @@
-import { Client, Collection } from 'discord.js';
-import { ClientExtended, CommandData } from '../types';
+import { ClientExtended } from '../types';
 
 export class OnReadyModule {
   constructor(private client: ClientExtended) {
@@ -112,7 +111,12 @@ export class OnReadyModule {
 
         // TO-DO: Initialize Database & Interaction modules here
         await this.client.databaseModule.initialize();
-        // await this.client.interactionModule.initialize(client as Client<true>, client.slashCommands as Collection<string, CommandData>);
+        // await this.client.interactionModule
+        // .initialize(
+        // client as ClientExtended,
+        // client.slashCommands as Collection<string,
+        // CommandData>
+        // );
       });
     } catch (error) {
       this.client.loggerModule.error(

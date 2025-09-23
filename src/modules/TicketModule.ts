@@ -13,11 +13,9 @@ import {
   MessageFlags,
 } from 'discord.js';
 import discordTranscripts from 'discord-html-transcripts';
-import { PrismaClient } from '@prisma/client';
 import { ClientExtended } from '../types';
 
 export class TicketModule {
-  private prisma: PrismaClient;
   private ticketCategories: Array<{
     id: string;
     name: string;
@@ -26,10 +24,17 @@ export class TicketModule {
     color: string;
   }> = [
     {
-      id: 'financeiro',
-      name: 'Financeiro',
-      emoji: '💰',
-      description: 'Assuntos financeiros e pagamentos',
+      id: 'problemas',
+      name: 'Problemas',
+      emoji: '🔧',
+      description: 'Problemas técnicos e bugs',
+      color: '#ff6600',
+    },
+    {
+      id: 'compras',
+      name: 'Compras',
+      emoji: '🛒',
+      description: 'Compras, vendas e pagamentos',
       color: '#00ff00',
     },
     {
@@ -38,13 +43,6 @@ export class TicketModule {
       emoji: '❓',
       description: 'Precisa de ajuda ou suporte',
       color: '#0099ff',
-    },
-    {
-      id: 'compra',
-      name: 'Compra',
-      emoji: '🛒',
-      description: 'Compras e vendas',
-      color: '#ff6600',
     },
     {
       id: 'reclamacao',
@@ -131,19 +129,19 @@ export class TicketModule {
     return modal;
   }
 
-  private buildOpenedTicketEmbed(interaction: any, guildData: any) {
-    return new EmbedBuilder()
-      .setColor('#2f3136')
-      .setAuthor({
-        name: guildData.ticketTitle || 'Sistema de Tickets',
-        iconURL: interaction.guild.iconURL({ dynamic: true }),
-      })
-      .setDescription(guildData.ticketDescription || 'Bem-vindo ao seu ticket!')
-      .setFooter({
-        text: interaction.guild.name,
-        iconURL: interaction.guild.iconURL({ dynamic: true }),
-      });
-  }
+  // private buildOpenedTicketEmbed(interaction: any, guildData: any) {
+  //   return new EmbedBuilder()
+  //     .setColor('#2f3136')
+  //     .setAuthor({
+  //       name: guildData.ticketTitle || 'Sistema de Tickets',
+  //       iconURL: interaction.guild.iconURL({ dynamic: true }),
+  //     })
+  //     .setDescription(guildData.ticketDescription || 'Bem-vindo ao seu ticket!')
+  //     .setFooter({
+  //       text: interaction.guild.name,
+  //       iconURL: interaction.guild.iconURL({ dynamic: true }),
+  //     });
+  // }
 
   private buildTicketButtons(type: string, isClaimed: boolean = false) {
     const buttons: ButtonBuilder[] = [];
@@ -227,7 +225,7 @@ export class TicketModule {
     }
   }
 
-  async ticketModal(client: any, interaction: any) {
+  async ticketModal(_client: any, interaction: any) {
     const openTitle = interaction.fields.getTextInputValue('opentitle');
     const openDescription =
       interaction.fields.getTextInputValue('opendescription');
@@ -298,7 +296,7 @@ export class TicketModule {
     });
   }
 
-  async checkTicketConfig(client: any, interaction: any) {
+  async checkTicketConfig(_client: any, interaction: any) {
     const hasAdminRole = interaction.memberPermissions?.has([
       PermissionFlagsBits.Administrator,
     ]);
@@ -306,7 +304,7 @@ export class TicketModule {
     return;
   }
 
-  async cleanupOrphanedTickets(client: any, interaction: any) {
+  async cleanupOrphanedTickets(_client: any, interaction: any) {
     try {
       this.client.loggerModule.info(
         'TicketModule',
@@ -339,7 +337,7 @@ export class TicketModule {
     }
   }
 
-  async claimTicket(client: any, interaction: any) {
+  async claimTicket(_client: any, interaction: any) {
     try {
       this.client.loggerModule.info(
         'TicketModule',
@@ -427,7 +425,7 @@ export class TicketModule {
     }
   }
 
-  async transferTicket(client: any, interaction: any) {
+  async transferTicket(_client: any, interaction: any) {
     try {
       this.client.loggerModule.info(
         'TicketModule',
@@ -478,11 +476,6 @@ export class TicketModule {
         embeds: [transferEmbed],
       });
 
-      await interaction.reply({
-        content: `✅ **Ticket transferido com sucesso!**\n\n🎫 **Ticket:** #${ticket.ticketNumber.toString().padStart(4, '0')}\n👤 **Novo Atendente:** <@${newAttendant.id}>\n⏰ **Transferido em:** <t:${Math.floor(Date.now() / 1000)}:F>`,
-        flags: MessageFlags.Ephemeral,
-      });
-
       this.client.loggerModule.info(
         'TicketModule',
         `Ticket ${ticket.id} transferido para ${newAttendant.id}`,
@@ -499,7 +492,7 @@ export class TicketModule {
     }
   }
 
-  async sendModal(client: any, interaction: any) {
+  async sendModal(_client: any, interaction: any) {
     try {
       const guildData = await this.getGuildData(interaction.guildId);
 
@@ -575,7 +568,7 @@ export class TicketModule {
     }
   }
 
-  async ticketOpen(client: any, interaction: any) {
+  async ticketOpen(_client: any, interaction: any) {
     try {
       const existingTicket =
         await this.client.databaseModule.findExistingTicket(
@@ -638,7 +631,7 @@ export class TicketModule {
   }
 
   async createTicketWithCategory(
-    client: any,
+    _client: any,
     interaction: any,
     categoryId: string,
   ) {
@@ -908,7 +901,7 @@ export class TicketModule {
     }
   }
 
-  async ticketClose(client: any, interaction: any) {
+  async ticketClose(_client: any, interaction: any) {
     try {
       const channel = interaction.channel;
       const userId = channel.topic;
@@ -922,6 +915,29 @@ export class TicketModule {
 
       if (!userId) {
         throw new Error('ID do usuário não encontrado no topic do canal');
+      }
+
+      const hasTicketRole = interaction.member.roles.cache.has(
+        guildData.ticketRoleId || '',
+      );
+      const isAdmin = interaction.member.permissions.has('Administrator');
+
+      if (!hasTicketRole && !isAdmin) {
+        return interaction.reply({
+          content: `❌ Você precisa do cargo <@&${guildData.ticketRoleId}> ou permissão de Administrador para fechar tickets.`,
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      const ticket = await this.client.databaseModule.getTicketByChannel(
+        interaction.channelId,
+      );
+      if (!ticket?.claimedBy) {
+        return interaction.reply({
+          content:
+            '❌ Este ticket ainda não foi reivindicado por ninguém. Use o botão "Claim Ticket" primeiro.',
+          flags: MessageFlags.Ephemeral,
+        });
       }
 
       await channel.permissionOverwrites.edit(userId, {
@@ -974,7 +990,7 @@ export class TicketModule {
     } catch (error) {
       this.client.loggerModule.error(
         'TicketModule',
-        `Erro ao fechar ticket: ${error.message}`,
+        `Erro ao fechar ticket: ${error instanceof Error ? error.message : String(error)}`,
       );
       await interaction.reply({
         content: '❌ Erro ao fechar o ticket. Por favor, tente novamente.',
@@ -983,7 +999,7 @@ export class TicketModule {
     }
   }
 
-  async ticketReopen(client: any, interaction: any) {
+  async ticketReopen(_client: any, interaction: any) {
     const ticketMember = interaction.channel.topic;
     const memberData = interaction.guild.members.cache.get(ticketMember);
     const guildData = await this.getGuildData(interaction.guildId);
@@ -1031,7 +1047,7 @@ export class TicketModule {
     });
   }
 
-  async ticketCloseMessage(client: any, interaction: any) {
+  async ticketCloseMessage(_client: any, interaction: any) {
     try {
       await interaction.message.delete();
     } catch (error) {
@@ -1039,7 +1055,7 @@ export class TicketModule {
     }
   }
 
-  async ticketTranscript(client: any, interaction: any) {
+  async ticketTranscript(_client: any, interaction: any) {
     try {
       const channel = interaction.channel;
       const userId = channel.topic;
@@ -1117,7 +1133,7 @@ export class TicketModule {
     } catch (error) {
       this.client.loggerModule.error(
         'TicketModule',
-        `Erro ao gerar transcript: ${error.message}`,
+        `Erro ao gerar transcript: ${error instanceof Error ? error.message : String(error)}`,
       );
       if (!interaction.replied && !interaction.deferred) {
         await interaction.reply({
@@ -1128,22 +1144,62 @@ export class TicketModule {
     }
   }
 
-  async ticketMentionUser(client: any, interaction: any) {
+  async ticketMentionUser(_client: any, interaction: any) {
     const {
-      channel: { topic },
+      channel: { topic, url },
       guild,
     } = interaction;
+    const validUser = await guild.members.fetch(topic);
+    try {
+      if (!topic || !validUser) {
+        return interaction.reply({
+          content:
+            'Este canal não é um ticket, ou o usuário não se encontra mais no servidor.',
+          flags: MessageFlags.Ephemeral,
+        });
+      }
 
-    const user = await guild.members.fetch(topic);
-    if (user) {
-      await interaction.reply({
-        content: `<@!${topic}>`,
+      const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('Ticket Aberto')
+        .setDescription(
+          `Olá ${validUser.user.tag}, você possui um ticket em aberto no servidor ${interaction.guild.name}, no qual foi mencionado.`,
+        )
+        .addFields([
+          { name: 'Canal do ticket:', value: `<#${interaction.channel.id}>` },
+        ])
+        .setTimestamp();
+
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel('Ir para o ticket')
+          .setURL(url)
+          .setStyle(ButtonStyle.Link),
+      );
+
+      await validUser.send({
+        content: `Olá ${validUser.user}, você possui um ticket em aberto no qual foi mencionado:`,
+        embeds: [embed],
+        components: [row],
+      });
+
+      return interaction.reply({
+        content: 'O usuário foi mencionado',
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'TicketModule',
+        `Erro ao mencionar usuário: ${error}`,
+      );
+      return interaction.reply({
+        content: `Não foi possível mencionar o usuário ${validUser.user}.`,
         flags: MessageFlags.Ephemeral,
       });
     }
   }
 
-  async addUser(client: any, interaction: any) {
+  async addUser(_client: any, interaction: any) {
     try {
       const member = interaction.options.getUser('membro');
       const channel = interaction.channel;
@@ -1186,7 +1242,7 @@ export class TicketModule {
     }
   }
 
-  async removeUser(client: any, interaction: any) {
+  async removeUser(_client: any, interaction: any) {
     try {
       const member = interaction.options.getUser('membro');
       const channel = interaction.channel;

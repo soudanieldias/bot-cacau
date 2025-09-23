@@ -17,10 +17,10 @@ export class ActivityModule {
   private setDefaultActivity(): void {
     try {
       this.client.user?.setActivity(
-        process.env.PRESENCE_MESSAGE || 'Cacau BOT',
+        process.env['PRESENCE_MESSAGE'] || 'Cacau BOT',
         {
           type: ActivityType.Playing,
-          url: process.env.BOT_PRESENCE_URL,
+          url: process.env['BOT_PRESENCE_URL']!,
         },
       );
 
@@ -157,7 +157,7 @@ export class ActivityModule {
   }
 
   public resetPresence(): Promise<boolean> {
-    return new Promise(resolve => {
+    return new Promise(_resolve => {
       this.setDefaultActivity();
     });
   }

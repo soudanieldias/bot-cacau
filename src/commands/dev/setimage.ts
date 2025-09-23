@@ -2,11 +2,10 @@ import {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
-  Client,
   ChatInputCommandInteraction,
   MessageFlags,
 } from 'discord.js';
-import { CommandData } from '../../types';
+import { CommandData, ClientExtended } from '../../types';
 
 export default (): CommandData => ({
   data: new SlashCommandBuilder()
@@ -19,16 +18,16 @@ export default (): CommandData => ({
   categories: ['dev'],
 
   async execute(
-    client: Client<true>,
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
-  ): Promise<any> {
-    const isDeveloper = interaction.user.id === process.env.DEV_ID;
+  ): Promise<void> {
+    const isDeveloper = interaction.user.id === process.env['DEV_ID'];
 
     if (!isDeveloper) interaction.reply('Erro: Não Autorizado!!!');
 
     const avatar = interaction.options.getAttachment('avatar')!;
 
-    async function sendMessage(message: any) {
+    async function sendMessage(message: string) {
       const embed = new EmbedBuilder()
         .setColor('Blurple')
         .setDescription(message);
@@ -44,7 +43,7 @@ export default (): CommandData => ({
 
     var error;
 
-    await client.user.setAvatar(avatar.url).catch(async err => {
+    await client.user?.setAvatar(avatar.url).catch(async err => {
       error = true;
       console.log(err);
       return await sendMessage(`Erro: '${err.toString()}'`);

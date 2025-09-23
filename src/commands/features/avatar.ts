@@ -20,7 +20,7 @@ export default (): CommandData => ({
   categories: ['features'],
 
   async execute(
-    client: ClientExtended,
+    _client: ClientExtended,
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {

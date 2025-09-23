@@ -3,12 +3,10 @@ import { PrismaClient } from '@prisma/client';
 
 export class DatabaseModule {
   private readonly prisma: PrismaClient;
-  private settings: any;
 
   constructor(private readonly client: ClientExtended) {
     this.prisma = new PrismaClient();
     this.client.databaseModule = this;
-    this.settings = this.prisma.settings;
   }
 
   async initialize(): Promise<void> {
@@ -134,8 +132,17 @@ export class DatabaseModule {
     try {
       await this.prisma.guilds.upsert({
         where: { id: discordId },
-        update: { name, iconURL, bannerURL },
-        create: { id: discordId, name, iconURL, bannerURL },
+        update: {
+          name,
+          iconURL: iconURL || null,
+          bannerURL: bannerURL || null,
+        },
+        create: {
+          id: discordId,
+          name,
+          iconURL: iconURL || null,
+          bannerURL: bannerURL || null,
+        },
       });
     } catch (error) {
       this.client.loggerModule.error(
@@ -178,9 +185,10 @@ export class DatabaseModule {
 
   async updateSettings(guildId: string, settings: any): Promise<void> {
     try {
-      await this.prisma.settings.update({
+      await this.prisma.settings.upsert({
         where: { id: guildId },
-        data: settings,
+        update: settings,
+        create: { id: guildId, ...settings },
       });
     } catch (error) {
       this.client.loggerModule.error(
@@ -258,9 +266,9 @@ export class DatabaseModule {
           id: `${guildId}-${categoryData.name.toLowerCase()}`,
           guildId,
           name: categoryData.name,
-          emoji: categoryData.emoji,
-          description: categoryData.description,
-          color: categoryData.color,
+          emoji: categoryData.emoji || null,
+          description: categoryData.description || null,
+          color: categoryData.color || null,
         },
       });
 

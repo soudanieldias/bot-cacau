@@ -65,6 +65,20 @@ export class InteractionModule {
                   this.client,
                   interaction,
                 );
+              case 'apply-staff-form':
+                const staffButton = this.client.buttons.get('apply-staff-form');
+                if (staffButton) {
+                  return await staffButton.execute(interaction);
+                }
+                break;
+              case 'apply-youtuber-form':
+                const youtuberButton = this.client.buttons.get(
+                  'apply-youtuber-form',
+                );
+                if (youtuberButton) {
+                  return await youtuberButton.execute(interaction);
+                }
+                break;
               default:
                 if (interaction.customId.startsWith('ticket-category-')) {
                   const categoryId = interaction.customId.replace(

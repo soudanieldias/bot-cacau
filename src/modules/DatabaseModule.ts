@@ -622,4 +622,163 @@ export class DatabaseModule {
       return null;
     }
   }
+
+  // Métodos para formulários
+  async createStaffForm(formData: {
+    guildId: string;
+    userId: string;
+    nickname: string;
+    name: string;
+    age: string;
+    hour: string;
+    about: string;
+  }) {
+    try {
+      return await this.prisma.staffForms.create({
+        data: {
+          id: `${formData.guildId}-${formData.userId}-${Date.now()}`,
+          ...formData,
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao criar formulário de Staff: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async createYouTuberForm(formData: {
+    guildId: string;
+    userId: string;
+    nickname: string;
+    youtubeUrl: string;
+    videoUrl: string;
+  }) {
+    try {
+      return await this.prisma.youTuberForms.create({
+        data: {
+          id: `${formData.guildId}-${formData.userId}-${Date.now()}`,
+          ...formData,
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao criar formulário de YouTuber: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getStaffForms(guildId: string, status?: string) {
+    try {
+      return await this.prisma.staffForms.findMany({
+        where: {
+          guildId,
+          ...(status && { status }),
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar formulários de Staff: ${error}`,
+      );
+      return [];
+    }
+  }
+
+  async getYouTuberForms(guildId: string, status?: string) {
+    try {
+      return await this.prisma.youTuberForms.findMany({
+        where: {
+          guildId,
+          ...(status && { status }),
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar formulários de YouTuber: ${error}`,
+      );
+      return [];
+    }
+  }
+
+  async updateStaffFormStatus(
+    formId: string,
+    status: string,
+    reviewedBy: string,
+  ) {
+    try {
+      return await this.prisma.staffForms.update({
+        where: { id: formId },
+        data: {
+          status,
+          reviewedBy,
+          reviewedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao atualizar status do formulário de Staff: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async updateYouTuberFormStatus(
+    formId: string,
+    status: string,
+    reviewedBy: string,
+  ) {
+    try {
+      return await this.prisma.youTuberForms.update({
+        where: { id: formId },
+        data: {
+          status,
+          reviewedBy,
+          reviewedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao atualizar status do formulário de YouTuber: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getStaffFormById(formId: string) {
+    try {
+      return await this.prisma.staffForms.findUnique({
+        where: { id: formId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar formulário de Staff por ID: ${error}`,
+      );
+      return null;
+    }
+  }
+
+  async getYouTuberFormById(formId: string) {
+    try {
+      return await this.prisma.youTuberForms.findUnique({
+        where: { id: formId },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao buscar formulário de YouTuber por ID: ${error}`,
+      );
+      return null;
+    }
+  }
 }

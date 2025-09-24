@@ -36,6 +36,10 @@ model Settings {
   ticketTitle             String?
   ticketButtonName        String?
   ticketDescription       String?
+  staffFormChannelId      String?
+  staffFormLogsChannelId  String?
+  youtuberFormChannelId   String?
+  youtuberFormLogsChannelId String?
 }
 
 model TicketCategories {
@@ -75,4 +79,34 @@ model Tickets {
   closedAt    DateTime?
   
   @@unique([guildId, categoryId, ticketNumber])
+}
+
+model StaffForms {
+  id          String @id
+  guildId     String
+  userId      String
+  nickname    String
+  name        String
+  age         String
+  hour        String
+  about       String
+  status      String @default("pending")
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model YouTuberForms {
+  id          String @id
+  guildId     String
+  userId      String
+  nickname    String
+  youtubeUrl  String
+  videoUrl    String
+  status      String @default("pending")
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

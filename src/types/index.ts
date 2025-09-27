@@ -11,8 +11,10 @@ import {
 import {
   ActivityModule,
   DatabaseModule,
+  EmbedModule,
   InteractionModule,
   LoggerModule,
+  ModalModule,
   TicketModule,
 } from '../modules';
 
@@ -25,9 +27,11 @@ export type ClientExtended = Client & {
 
   // Modules:
   activityModule: ActivityModule;
+  databaseModule: DatabaseModule;
+  embedModule: EmbedModule;
   interactionModule: InteractionModule;
   loggerModule: LoggerModule;
-  databaseModule: DatabaseModule;
+  modalModule: ModalModule;
   ticketModule: TicketModule;
 };
 

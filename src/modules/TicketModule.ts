@@ -476,6 +476,13 @@ export class TicketModule {
         embeds: [transferEmbed],
       });
 
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({
+          content: `✅ Ticket transferido para ${newAttendant}.`,
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
       this.client.loggerModule.info(
         'TicketModule',
         `Ticket ${ticket.id} transferido para ${newAttendant.id}`,

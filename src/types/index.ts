@@ -24,6 +24,7 @@ export type ClientExtended = Client & {
   commands: Map<string, CommandData>;
   modals: Map<string, ModalData>;
   slashCommands: Map<string, CommandData>;
+  embedSessions?: Map<string, any>;
 
   // Modules:
   activityModule: ActivityModule;

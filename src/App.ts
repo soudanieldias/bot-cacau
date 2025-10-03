@@ -5,10 +5,10 @@ import {
   ActivityModule,
   CommandModule,
   DatabaseModule,
-  // EmbedModule,
+  EmbedModule,
   InteractionModule,
   LoggerModule,
-  // ModalModule,
+  ModalModule,
   OnReadyModule,
   TicketModule,
 } from './modules';
@@ -38,16 +38,16 @@ export default class App {
     this.client.activityModule = new ActivityModule(this.client);
     this.client.databaseModule = new DatabaseModule(this.client);
     this.client.ticketModule = new TicketModule(this.client);
-    // this.client.embedModule = new EmbedModule(this.client);
-    // this.client.modalModule = new ModalModule(this.client);
+    this.client.embedModule = new EmbedModule(this.client);
+    this.client.modalModule = new ModalModule(this.client);
   }
 
   private async initializeModules(): Promise<void> {
     await new OnReadyModule(this.client).initialize();
     await new CommandModule(this.client).initialize();
     await new InteractionModule(this.client).initialize();
-    // await new EmbedModule(this.client).initialize();
-    // await new ModalModule(this.client).initialize();
+    await this.client.embedModule.initialize();
+    await this.client.modalModule.initialize();
   }
 
   public async start(): Promise<void> {

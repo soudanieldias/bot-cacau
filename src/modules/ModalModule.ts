@@ -1,5 +1,7 @@
-import { globSync } from 'fs';
 import { ClientExtended } from '../types';
+import staffModal from '../modals/staff-modal';
+import youtuberModal from '../modals/youtuber-modal';
+import { MessageFlags } from 'discord.js';
 
 export class ModalModule {
   constructor(private client: ClientExtended) {
@@ -13,93 +15,234 @@ export class ModalModule {
         'Carregando módulo de modais.',
       );
 
-      const modalFiles = globSync('src/modals/**/*.ts').flat();
-
-      this.client.loggerModule.info(
-        'ModalModule',
-        `Encontrados ${modalFiles.length} arquivos de modal:`,
-      );
-
-      modalFiles.forEach((filePath: string) => {
-        this.client.loggerModule.info('ModalModule', `  📁 ${filePath}`);
+      this.client.modals.set('staff-form', {
+        data: staffModal.data,
+        customId: 'staff-form',
+        execute: async (client: any, interaction: any) => {
+          return await this.sendStaffModal(client, interaction);
+        },
       });
 
-      let loadedModals = 0;
-      let skippedModals = 0;
-      let duplicateModals = 0;
-
-      for await (const filePath of modalFiles) {
-        try {
-          const modulePath = filePath.startsWith('.')
-            ? filePath
-            : `../../${filePath}`;
-          const modalModule = await import(modulePath);
-          const modalExport = modalModule.default || modalModule;
-          const modal =
-            typeof modalExport === 'function' ? modalExport() : modalExport;
-
-          if (!modal || !modal.data) {
-            this.client.loggerModule.error(
-              'ModalModule',
-              `❌ Modal inválido em ${filePath} - sem data`,
-            );
-            skippedModals++;
-            continue;
-          }
-
-          const customId = modal.data.customId;
-
-          if (!customId) {
-            this.client.loggerModule.error(
-              'ModalModule',
-              `❌ Modal sem customId em ${filePath}`,
-            );
-            skippedModals++;
-            continue;
-          }
-
-          if (this.client.modals && this.client.modals.has(customId)) {
-            this.client.loggerModule.warn(
-              'ModalModule',
-              `⚠️ Modal duplicado: ${customId} já existe, ignorando ${filePath}`,
-            );
-            duplicateModals++;
-            continue;
-          }
-
-          if (this.client.modals) {
-            this.client.modals.set(customId, modal);
-
-            this.client.loggerModule.info(
-              'ModalModule',
-              `✅ Carregado modal: ${customId}`,
-            );
-            loadedModals++;
-          } else {
-            this.client.loggerModule.error(
-              'ModalModule',
-              `❌ this.client.modals não está disponível para ${customId}`,
-            );
-            skippedModals++;
-          }
-        } catch (error) {
-          this.client.loggerModule.error(
-            'ModalModule',
-            `❌ Erro ao carregar modal ${filePath}: ${error}`,
-          );
-          skippedModals++;
-        }
-      }
+      this.client.modals.set('youtuber-form', {
+        data: youtuberModal.data,
+        customId: 'youtuber-form',
+        execute: async (client: any, interaction: any) => {
+          return await this.sendYouTuberModal(client, interaction);
+        },
+      });
 
       this.client.loggerModule.info(
         'ModalModule',
-        `📊 Resumo: ${loadedModals} carregados, ${skippedModals} ignorados, ${duplicateModals} duplicados`,
+        `✅ Carregados ${this.client.modals.size} modais na memória`,
+      );
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `📋 Modais disponíveis: ${Array.from(this.client.modals.keys()).join(', ')}`,
       );
     } catch (error) {
       this.client.loggerModule.error(
         'ModalModule',
-        `❌ Erro ao carregar módulo de modais: ${error}`,
+        `Erro ao carregar modais: ${error}`,
       );
+    }
+  }
+
+  public getModal(modalName: string) {
+    return this.client.modals.get(modalName);
+  }
+
+  public getAvailableModals(): string[] {
+    return Array.from(this.client.modals.keys());
+  }
+
+  public getAllModals() {
+    return this.client.modals;
+  }
+
+  public async sendStaffModal(_client: any, interaction: any): Promise<void> {
+    try {
+      const { staffFormResponseEmbed } = await import(
+        '../embeds/staff-form-response-embed'
+      );
+      const generateId = () => Math.random().toString(36).substr(2, 9);
+
+      const formData = {
+        id: generateId(),
+        nickname: interaction.fields.getTextInputValue('nickname'),
+        name: interaction.fields.getTextInputValue('name'),
+        age: interaction.fields.getTextInputValue('age'),
+        hour: interaction.fields.getTextInputValue('hour'),
+        about: interaction.fields.getTextInputValue('experience'),
+      };
+
+      const responseEmbed = staffFormResponseEmbed(
+        interaction.user,
+        interaction.guild,
+        formData,
+      );
+
+      const guildSettings = await this.client.databaseModule.getSettings(
+        interaction.guild.id,
+      );
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Configurações da guild: ${JSON.stringify(guildSettings, null, 2)}`,
+      );
+
+      const logsChannelId = (guildSettings as any)?.staffFormLogsChannelId;
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Canal de logs configurado: ${logsChannelId}`,
+      );
+
+      let logsChannel = interaction.channel;
+
+      if (logsChannelId) {
+        try {
+          const configuredChannel =
+            await interaction.guild.channels.fetch(logsChannelId);
+          if (configuredChannel && configuredChannel.isTextBased()) {
+            logsChannel = configuredChannel;
+            this.client.loggerModule.info(
+              'ModalModule',
+              `Usando canal configurado: ${logsChannelId}`,
+            );
+          }
+        } catch (error) {
+          this.client.loggerModule.warn(
+            'ModalModule',
+            `Canal de logs de staff não encontrado: ${logsChannelId}`,
+          );
+        }
+      } else {
+        this.client.loggerModule.info(
+          'ModalModule',
+          'Nenhum canal de logs configurado, usando canal atual',
+        );
+        logsChannel = interaction.channel;
+      }
+
+      if (logsChannel && logsChannel.isTextBased()) {
+        await logsChannel.send({
+          embeds: [responseEmbed],
+        });
+      }
+
+      await interaction.reply({
+        content:
+          '✅ Formulário de staff enviado com sucesso! Nossa equipe analisará sua candidatura em breve.',
+        flags: MessageFlags.Ephemeral,
+      });
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Formulário de staff enviado por ${interaction.user.tag} (${interaction.user.id})`,
+      );
+    } catch (error) {
+      this.client.loggerModule.error(
+        'ModalModule',
+        `Erro ao processar formulário de staff: ${error}`,
+      );
+      await interaction.reply({
+        content: '❌ Erro ao processar formulário. Tente novamente.',
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  }
+
+  public async sendYouTuberModal(
+    _client: any,
+    interaction: any,
+  ): Promise<void> {
+    try {
+      const { youTuberResponseEmbed } = await import(
+        '../embeds/youtuber-form-response-embed'
+      );
+      const generateId = () => Math.random().toString(36).substr(2, 9);
+
+      const formData = {
+        id: generateId(),
+        nickname: interaction.fields.getTextInputValue('nickname'),
+        youtubeUrl: interaction.fields.getTextInputValue('youtubeUrl'),
+        videoUrl: interaction.fields.getTextInputValue('videoUrl'),
+      };
+
+      const responseEmbed = youTuberResponseEmbed(
+        interaction.user,
+        interaction.guild,
+        formData,
+      );
+
+      const guildSettings = await this.client.databaseModule.getSettings(
+        interaction.guild.id,
+      );
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Configurações da guild: ${JSON.stringify(guildSettings, null, 2)}`,
+      );
+
+      const logsChannelId = (guildSettings as any)?.youtuberFormLogsChannelId;
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Canal de logs configurado: ${logsChannelId}`,
+      );
+
+      let logsChannel = interaction.channel;
+
+      if (logsChannelId) {
+        try {
+          const configuredChannel =
+            await interaction.guild.channels.fetch(logsChannelId);
+          if (configuredChannel && configuredChannel.isTextBased()) {
+            logsChannel = configuredChannel;
+            this.client.loggerModule.info(
+              'ModalModule',
+              `Usando canal configurado: ${logsChannelId}`,
+            );
+          }
+        } catch (error) {
+          this.client.loggerModule.warn(
+            'ModalModule',
+            `Canal de logs de youtuber não encontrado: ${logsChannelId}`,
+          );
+        }
+      } else {
+        this.client.loggerModule.info(
+          'ModalModule',
+          'Nenhum canal de logs configurado, usando canal atual',
+        );
+      }
+
+      if (logsChannel && logsChannel.isTextBased()) {
+        await logsChannel.send({
+          embeds: [responseEmbed],
+        });
+      }
+
+      await interaction.reply({
+        content:
+          '✅ Formulário de YouTuber enviado com sucesso! Nossa equipe analisará sua candidatura em breve.',
+        flags: MessageFlags.Ephemeral,
+      });
+
+      this.client.loggerModule.info(
+        'ModalModule',
+        `Formulário de youtuber enviado por ${interaction.user.tag} (${interaction.user.id})`,
+      );
+    } catch (error) {
+      this.client.loggerModule.error(
+        'ModalModule',
+        `Erro ao processar formulário de youtuber: ${error}`,
+      );
+      await interaction.reply({
+        content: '❌ Erro ao processar formulário. Tente novamente.',
+        flags: MessageFlags.Ephemeral,
+      });
     }
   }
 }

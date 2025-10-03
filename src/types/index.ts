@@ -49,6 +49,7 @@ export interface CommandData {
 }
 
 export interface ModalData {
+  data: any;
   customId: string;
   execute: (
     client: ClientExtended,

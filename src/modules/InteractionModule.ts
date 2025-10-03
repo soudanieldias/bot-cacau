@@ -65,20 +65,26 @@ export class InteractionModule {
                   this.client,
                   interaction,
                 );
-              case 'apply-staff-form':
-                const staffButton = this.client.buttons.get('apply-staff-form');
-                if (staffButton) {
-                  return await staffButton.execute(interaction);
+              case 'staff-form':
+                const staffModal = this.client.modals.get('staff-form');
+                if (staffModal && staffModal.data) {
+                  await interaction.showModal(staffModal.data);
+                } else {
+                  return await interaction.reply({
+                    content: '❌ Modal não encontrado!',
+                    flags: [MessageFlags.Ephemeral],
+                  });
                 }
-                break;
-              case 'apply-youtuber-form':
-                const youtuberButton = this.client.buttons.get(
-                  'apply-youtuber-form',
-                );
-                if (youtuberButton) {
-                  return await youtuberButton.execute(interaction);
+              case 'youtuber-form':
+                const youtuberModal = this.client.modals.get('youtuber-form');
+                if (youtuberModal && youtuberModal.data) {
+                  return await interaction.showModal(youtuberModal.data);
+                } else {
+                  return await interaction.reply({
+                    content: '❌ Modal não encontrado!',
+                    flags: [MessageFlags.Ephemeral],
+                  });
                 }
-                break;
               default:
                 if (interaction.customId.startsWith('ticket-category-')) {
                   const categoryId = interaction.customId.replace(
@@ -92,7 +98,7 @@ export class InteractionModule {
                   );
                 }
                 return await interaction.reply({
-                  content: 'Botão não reconhecido',
+                  content: `Botão não reconhecido ${interaction.customId}`,
                   flags: [MessageFlags.Ephemeral],
                 });
             }
@@ -103,6 +109,16 @@ export class InteractionModule {
             switch (interaction.customId) {
               case 'ticket-modal':
                 return await this.client.ticketModule.ticketModal(
+                  this.client,
+                  interaction,
+                );
+              case 'staff-form':
+                return await this.client.modalModule.sendStaffModal(
+                  this.client,
+                  interaction,
+                );
+              case 'youtuber-form':
+                return await this.client.modalModule.sendYouTuberModal(
                   this.client,
                   interaction,
                 );

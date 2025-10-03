@@ -8,105 +8,103 @@ datasource db {
 }
 
 model Guilds {
-  id       String  @id
-  name     String
-  iconURL  String?
+  id        String  @id
+  name      String
+  iconURL   String?
   bannerURL String?
 }
 
 model Users {
-  id       String  @id
+  id       String @id
   username String
-  points   Int     @default(0)
+  points   Int    @default(0)
 }
 
 model Settings {
-  id                      String  @id
-  ownerId                 String?
-  staffChannelId          String?
-  ticketChannelId         String?
-  announcesChannelId      String?
-  suggestionsChannelId    String?
-  upvoteEmoji             String?
-  downvoteEmoji           String?
-  modRoleId               String?
-  ticketCategoryId        String?
-  ticketLogsChannelId     String?
-  ticketRoleId            String?
-  ticketTitle             String?
-  ticketButtonName        String?
-  ticketDescription       String?
-  staffFormChannelId      String?
-  staffFormLogsChannelId  String?
-  youtuberFormChannelId   String?
+  id                        String  @id
+  ownerId                   String?
+  staffChannelId            String?
+  ticketChannelId           String?
+  announcesChannelId        String?
+  suggestionsChannelId      String?
+  modRoleId                 String?
+  ticketCategoryId          String?
+  ticketLogsChannelId       String?
+  ticketRoleId              String?
+  ticketTitle               String?
+  ticketButtonName          String?
+  ticketDescription         String?
+  downvoteEmoji             String?
+  upvoteEmoji               String?
+  staffFormLogsChannelId    String?
   youtuberFormLogsChannelId String?
+  staffFormChannelId        String?
+  youtuberFormChannelId     String?
 }
 
 model TicketCategories {
-  id          String @id
+  id          String   @id
   guildId     String
   name        String
   emoji       String?
   description String?
-  color       String? @default("#2f3136")
-  isActive    Boolean @default(true)
+  color       String?  @default("#2f3136")
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@unique([guildId, name])
 }
 
 model TicketCounters {
-  id          String @id
-  guildId     String
-  counter     Int @default(0)
-  updatedAt   DateTime @updatedAt
-  
-  @@unique([guildId])
+  id        String   @id
+  guildId   String   @unique
+  counter   Int      @default(0)
+  updatedAt DateTime @updatedAt
 }
 
 model Tickets {
-  id          String @id
-  guildId     String
-  categoryId  String
-  userId      String
-  channelId   String
-  status      String @default("open")
+  id           String    @id
+  guildId      String
+  categoryId   String
+  userId       String
+  channelId    String
+  status       String    @default("open")
   ticketNumber Int
-  claimedBy   String?
-  claimedAt   DateTime?
-  createdAt   DateTime @default(now())
-  closedAt    DateTime?
-  
+  createdAt    DateTime  @default(now())
+  closedAt     DateTime?
+  claimedAt    DateTime?
+  claimedBy    String?
+
   @@unique([guildId, categoryId, ticketNumber])
 }
 
 model StaffForms {
-  id          String @id
-  guildId     String
-  userId      String
-  nickname    String
-  name        String
-  age         String
-  hour        String
-  about       String
-  status      String @default("pending")
-  reviewedBy  String?
-  reviewedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id
+  guildId    String
+  userId     String
+  nickname   String
+  name       String
+  age        String
+  hour       String
+  about      String
+  status     String    @default("pending")
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model YouTuberForms {
-  id          String @id
-  guildId     String
-  userId      String
-  nickname    String
-  youtubeUrl  String
-  videoUrl    String
-  status      String @default("pending")
-  reviewedBy  String?
-  reviewedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id
+  guildId    String
+  userId     String
+  nickname   String
+  youtubeUrl String
+  videoUrl   String
+  status     String    @default("pending")
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

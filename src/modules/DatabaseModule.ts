@@ -407,6 +407,24 @@ export class DatabaseModule {
     }
   }
 
+  async closeTicket(ticketId: string) {
+    try {
+      return await this.prisma.tickets.update({
+        where: { id: ticketId },
+        data: {
+          status: 'closed',
+          closedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      this.client.loggerModule.error(
+        'DatabaseModule',
+        `Erro ao fechar ticket: ${error}`,
+      );
+      return null;
+    }
+  }
+
   async initializeDefaultTicketCategories(guildId: string) {
     try {
       const defaultCategories = [

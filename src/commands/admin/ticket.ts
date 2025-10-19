@@ -98,6 +98,13 @@ module.exports = {
             .setDescription('Atendente que receberá o ticket.')
             .setRequired(true),
         ),
+    )
+    .addSubcommand((subcommand: any) =>
+      subcommand
+        .setName('close')
+        .setDescription(
+          'Fecha um ticket com modal de fechamento e transcrição.',
+        ),
     ),
   categories: ['staff'],
 
@@ -126,6 +133,10 @@ module.exports = {
         break;
       case 'transfer':
         await client.ticketModule.transferTicket(client, interaction);
+        break;
+      case 'close':
+        // await client.ticketModule.ticketClose(client, interaction);
+        await client.ticketModule.ticketTranscript(client, interaction);
         break;
     }
   },

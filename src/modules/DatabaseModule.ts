@@ -167,7 +167,7 @@ export class DatabaseModule {
       await this.prisma.settings.upsert({
         where: { id: guildId },
         update: settings,
-        create: { id: guildId, ...settings },
+        create: { id: guildId, ...settings, createdAt: new Date() },
       });
     } catch (error) {
       this.client.loggerModule.error(
@@ -188,7 +188,7 @@ export class DatabaseModule {
       await this.prisma.settings.upsert({
         where: { id: guildId },
         update: settings,
-        create: { id: guildId, ...settings },
+        create: { id: guildId, ...settings, createdAt: new Date() },
       });
     } catch (error) {
       this.client.loggerModule.error(
@@ -203,7 +203,7 @@ export class DatabaseModule {
       await this.prisma.settings.upsert({
         where: { id: guildId },
         update: ticketData,
-        create: { id: guildId, ...ticketData },
+        create: { id: guildId, ...ticketData, createdAt: new Date() },
       });
     } catch (error) {
       this.client.loggerModule.error(
@@ -215,9 +215,10 @@ export class DatabaseModule {
 
   async updateTicketSettings(guildId: string, ticketData: any): Promise<void> {
     try {
-      await this.prisma.settings.update({
+      await this.prisma.settings.upsert({
         where: { id: guildId },
-        data: ticketData,
+        update: ticketData,
+        create: { id: guildId, ...ticketData, createdAt: new Date() },
       });
     } catch (error) {
       this.client.loggerModule.error(

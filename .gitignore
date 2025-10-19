@@ -41,3 +41,4 @@ Thumbs.db
 .temp/
 .tmp/
 /src/generated/prisma
+/ollama/

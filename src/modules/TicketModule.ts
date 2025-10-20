@@ -201,6 +201,7 @@ export class TicketModule {
       const categoria = interaction.options.getChannel('categoria');
       const botaoTicket = interaction.options.getString('botao');
       const cargo = interaction.options.getRole('cargo');
+      const mention = interaction.options.getRole('mention');
 
       await this.client.databaseModule.upsertTicketSettings(
         interaction.guild.id,
@@ -209,6 +210,7 @@ export class TicketModule {
           ticketButtonName: botaoTicket,
           announcesChannelId: canalLogs.id,
           modRoleId: cargo.id,
+          mentionRoleId: mention.id,
           ticketCategoryId: categoria.id,
           ticketLogsChannelId: canalLogs.id,
           ticketRoleId: cargo.id,
@@ -873,11 +875,11 @@ export class TicketModule {
       );
 
       let mentionContent = '';
-      if (guildData.ticketRoleId) {
-        mentionContent = `<@&${guildData.ticketRoleId}>`;
+      if (guildData.mentionRoleId) {
+        mentionContent = `<@&${guildData.mentionRoleId}>`;
         this.client.loggerModule.info(
           'TicketModule',
-          `Mencionando cargo: ${guildData.ticketRoleId}`,
+          `Mencionando cargo: ${guildData.mentionRoleId}`,
         );
       }
 

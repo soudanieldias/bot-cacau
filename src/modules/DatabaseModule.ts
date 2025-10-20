@@ -241,6 +241,7 @@ export class DatabaseModule {
           ticketTitle: true,
           ticketDescription: true,
           modRoleId: true,
+          mentionRoleId: true,
         },
       });
     } catch (error) {

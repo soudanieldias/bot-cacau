@@ -28,6 +28,7 @@ model Settings {
   announcesChannelId        String?
   suggestionsChannelId      String?
   modRoleId                 String?
+  mentionRoleId             String?
   ticketCategoryId          String?
   ticketLogsChannelId       String?
   ticketRoleId              String?

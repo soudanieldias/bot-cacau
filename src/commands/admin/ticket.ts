@@ -49,6 +49,12 @@ module.exports = {
             .setName('cargo')
             .setDescription('Cargo que podera ver os tickets.')
             .setRequired(true),
+        )
+        .addRoleOption((option: any) =>
+          option
+            .setName('mention')
+            .setDescription('Cargo que será mencionado ao abrir o ticket.')
+            .setRequired(true),
         ),
     )
     .addSubcommand((subcommand: any) =>
@@ -135,7 +141,6 @@ module.exports = {
         await client.ticketModule.transferTicket(client, interaction);
         break;
       case 'close':
-        // await client.ticketModule.ticketClose(client, interaction);
         await client.ticketModule.ticketTranscript(client, interaction);
         break;
     }

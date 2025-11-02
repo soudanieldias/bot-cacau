@@ -12,6 +12,7 @@ export default (): CommandData => ({
     .setDescription(
       'Remove um número especificado de mensagens no canal atual. [STAFF]',
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addIntegerOption(quantity =>
       quantity
         .setName('quantity')
@@ -25,19 +26,17 @@ export default (): CommandData => ({
   categories: ['staff'],
 
   async execute(
-    _client: ClientExtended,
+    client: ClientExtended,
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {
+      if (!(await client.interactionModule.checkifUserIsDeveloper(interaction)))
+        return;
+
       if (interaction.isRepliable()) {
-        const hasAdminRole = interaction.memberPermissions?.has([
-          PermissionFlagsBits.Administrator,
-        ]);
         const MESSAGES_TO_DELETE = Number(
           interaction.options.get('quantity')!.value,
         );
-
-        if (!hasAdminRole) await interaction.reply('ERRO: Não Autorizado!!!');
 
         await (interaction.channel as TextChannel).bulkDelete(
           MESSAGES_TO_DELETE,

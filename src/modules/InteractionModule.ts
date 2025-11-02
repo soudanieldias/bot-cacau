@@ -1,4 +1,9 @@
-import { Events, Interaction, MessageFlags } from 'discord.js';
+import {
+  Events,
+  Interaction,
+  MessageFlags,
+  RepliableInteraction,
+} from 'discord.js';
 import { ClientExtended } from '../types';
 
 export class InteractionModule {
@@ -579,5 +584,22 @@ export class InteractionModule {
       );
       return null;
     }
+  }
+
+  public async checkifUserIsDeveloper(
+    interaction: RepliableInteraction,
+  ): Promise<boolean> {
+    const isDeveloper = process.env['DEVELOPER_ID'] === interaction.user.id;
+    const enableDeveloperLock = process.env['DEVELOPER_LOCK'] || false;
+
+    if (!isDeveloper && enableDeveloperLock) {
+      await interaction.reply({
+        content:
+          'Erro: Não autorizado! Apenas desenvolvedores podem usar este comando.',
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    return isDeveloper;
   }
 }

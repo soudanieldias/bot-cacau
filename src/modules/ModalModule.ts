@@ -86,10 +86,10 @@ export class ModalModule {
         interaction.guild.id,
       );
 
-      this.client.loggerModule.info(
-        'ModalModule',
-        `Configurações da guild: ${JSON.stringify(guildSettings, null, 2)}`,
-      );
+      // this.client.loggerModule.info(
+      //   'ModalModule',
+      //   `Configurações da guild: ${JSON.stringify(guildSettings, null, 2)}`,
+      // );
 
       const logsChannelId = (guildSettings as any)?.staffFormLogsChannelId;
 

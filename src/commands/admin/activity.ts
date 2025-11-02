@@ -2,6 +2,7 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
+  ActivityType,
 } from 'discord.js';
 import { ClientExtended, CommandData } from '../../types';
 
@@ -25,11 +26,14 @@ export default (): CommandData => ({
             .setDescription('Tipo de atividade')
             .setRequired(true)
             .addChoices(
-              { name: 'Jogando', value: 'PLAYING' },
-              { name: 'Transmitindo', value: 'STREAMING' },
-              { name: 'Ouvindo', value: 'LISTENING' },
-              { name: 'Assistindo', value: 'WATCHING' },
-              { name: 'Competindo', value: 'COMPETING' },
+              { name: 'Jogando', value: ActivityType.Playing.toString() },
+              {
+                name: 'Transmitindo',
+                value: ActivityType.Streaming.toString(),
+              },
+              { name: 'Ouvindo', value: ActivityType.Listening.toString() },
+              { name: 'Assistindo', value: ActivityType.Watching.toString() },
+              { name: 'Competindo', value: ActivityType.Competing.toString() },
             ),
         )
         .addStringOption(option =>
@@ -106,6 +110,9 @@ export default (): CommandData => ({
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {
+      if (!(await client.interactionModule.checkifUserIsDeveloper(interaction)))
+        return;
+
       const subcommand = interaction.options.getSubcommand();
 
       switch (subcommand) {

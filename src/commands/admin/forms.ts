@@ -54,18 +54,10 @@ export default (): CommandData => ({
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {
+      if (!(await client.interactionModule.checkifUserIsDeveloper(interaction)))
+        return;
+
       if (!interaction.isRepliable()) return;
-
-      const hasAdminRole = interaction.memberPermissions?.has([
-        PermissionFlagsBits.Administrator,
-      ]);
-
-      if (!hasAdminRole) {
-        return interaction.reply({
-          content: '❌ Erro: Não Autorizado!',
-          flags: MessageFlags.Ephemeral,
-        });
-      }
 
       const subcommand = interaction.options.getSubcommand();
 

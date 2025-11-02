@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   ChannelType,
+  PermissionFlagsBits,
 } from 'discord.js';
 import { ClientExtended } from '../../types';
 
@@ -9,6 +10,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('ticket')
     .setDescription('Sistema de Ticket.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
     .addSubcommand((subcommand: any) =>
       subcommand
         .setName('config')
@@ -118,6 +120,9 @@ module.exports = {
     client: ClientExtended,
     interaction: ChatInputCommandInteraction,
   ) => {
+    if (!(await client.interactionModule.checkifUserIsDeveloper(interaction)))
+      return;
+
     switch (interaction.options.getSubcommand()) {
       case 'config':
         await client.ticketModule.config(client, interaction);

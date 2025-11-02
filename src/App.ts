@@ -40,12 +40,13 @@ export default class App {
     this.client.ticketModule = new TicketModule(this.client);
     this.client.embedModule = new EmbedModule(this.client);
     this.client.modalModule = new ModalModule(this.client);
+    this.client.interactionModule = new InteractionModule(this.client);
   }
 
   private async initializeModules(): Promise<void> {
     await new OnReadyModule(this.client).initialize();
     await new CommandModule(this.client).initialize();
-    await new InteractionModule(this.client).initialize();
+    await this.client.interactionModule.initialize();
     await this.client.embedModule.initialize();
     await this.client.modalModule.initialize();
   }

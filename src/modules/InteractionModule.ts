@@ -589,17 +589,38 @@ export class InteractionModule {
   public async checkifUserIsDeveloper(
     interaction: RepliableInteraction,
   ): Promise<boolean> {
-    const isDeveloper = process.env['DEVELOPER_ID'] === interaction.user.id;
-    const enableDeveloperLock = process.env['DEVELOPER_LOCK'] || false;
-
-    if (!isDeveloper && enableDeveloperLock) {
-      await interaction.reply({
-        content:
-          'Erro: Não autorizado! Apenas desenvolvedores podem usar este comando.',
-        flags: MessageFlags.Ephemeral,
-      });
+    // Valores padrão/fallback
+    const developerId = process.env['DEVELOPER_ID'] || '';
+    const enableDeveloperLock = (process.env['DEVELOPER_LOCK'] || 'false').toLowerCase() === 'true';
+    
+    // Se DEVELOPER_ID não estiver configurado, permite acesso (comportamento padrão permissivo)
+    if (!developerId) {
+      this.client.loggerModule?.warn(
+        'InteractionModule',
+        '⚠️ DEVELOPER_ID não configurado no .env - permitindo acesso a todos os usuários',
+      );
+      return true;
     }
 
-    return isDeveloper;
+    const isDeveloper = developerId === interaction.user.id;
+
+    if (!isDeveloper) {
+      if (enableDeveloperLock) {
+        await interaction.reply({
+          content:
+            '❌ Erro: Não autorizado! Apenas desenvolvedores podem usar este comando.',
+          flags: MessageFlags.Ephemeral,
+        });
+      } else {
+        // Se lock não estiver ativo mas não for desenvolvedor, apenas retorna false silenciosamente
+        this.client.loggerModule?.warn(
+          'InteractionModule',
+          `⚠️ Usuário ${interaction.user.tag} (${interaction.user.id}) tentou usar comando de desenvolvedor`,
+        );
+      }
+      return false;
+    }
+
+    return true;
   }
 }

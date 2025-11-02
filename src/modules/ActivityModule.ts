@@ -8,6 +8,15 @@ import {
 import { ClientExtended } from '../types';
 
 export class ActivityModule {
+  private readonly activityTypeMap: Record<string, ActivityType> = {
+    PLAYING: ActivityType.Playing,
+    STREAMING: ActivityType.Streaming,
+    LISTENING: ActivityType.Listening,
+    WATCHING: ActivityType.Watching,
+    COMPETING: ActivityType.Competing,
+    CUSTOM: ActivityType.Custom,
+  };
+
   constructor(private client: ClientExtended) {
     client.once('clientReady', () => {
       this.setDefaultActivity();
@@ -50,9 +59,19 @@ export class ActivityModule {
   ): Promise<boolean> {
     return new Promise(resolve => {
       try {
-        const type = ActivityType[activityType as keyof typeof ActivityType];
+        const upperType = activityType.toUpperCase();
+        const type = this.activityTypeMap[upperType];
 
-        if (activityType === 'STREAMING' && !url) {
+        if (type === undefined) {
+          this.client.loggerModule.error(
+            'ActivityModule',
+            `❌ Tipo de atividade inválido: ${activityType}. Valores válidos: ${Object.keys(this.activityTypeMap).join(', ')}`,
+          );
+          resolve(false);
+          return;
+        }
+
+        if (upperType === 'STREAMING' && !url) {
           this.client.loggerModule.error(
             'ActivityModule',
             '❌ URL é obrigatória para atividades do tipo STREAMING!',
@@ -61,7 +80,7 @@ export class ActivityModule {
           return;
         }
 
-        if (activityType === 'STREAMING' && url) {
+        if (upperType === 'STREAMING' && url) {
           this.client.user?.setActivity(name, {
             type,
             url,
@@ -95,9 +114,19 @@ export class ActivityModule {
   ): Promise<boolean> {
     return new Promise(resolve => {
       try {
-        const type = ActivityType[activityType as keyof typeof ActivityType];
+        const upperType = activityType.toUpperCase();
+        const type = this.activityTypeMap[upperType];
 
-        if (activityType === 'STREAMING' && !url) {
+        if (type === undefined) {
+          this.client.loggerModule.error(
+            'ActivityModule',
+            `❌ Tipo de atividade inválido: ${activityType}. Valores válidos: ${Object.keys(this.activityTypeMap).join(', ')}`,
+          );
+          resolve(false);
+          return;
+        }
+
+        if (upperType === 'STREAMING' && !url) {
           this.client.loggerModule.error(
             'ActivityModule',
             '❌ URL é obrigatória para atividades do tipo STREAMING!',
@@ -116,7 +145,7 @@ export class ActivityModule {
           ],
         };
 
-        if (activityType === 'STREAMING' && url) {
+        if (upperType === 'STREAMING' && url) {
           presenceOptions.activities[0].url = url;
         }
 

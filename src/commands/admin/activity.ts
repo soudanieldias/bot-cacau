@@ -2,7 +2,7 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
   PermissionFlagsBits,
-  ActivityType,
+  MessageFlags,
 } from 'discord.js';
 import { ClientExtended, CommandData } from '../../types';
 
@@ -26,14 +26,14 @@ export default (): CommandData => ({
             .setDescription('Tipo de atividade')
             .setRequired(true)
             .addChoices(
-              { name: 'Jogando', value: ActivityType.Playing.toString() },
+              { name: 'Jogando', value: 'PLAYING' },
               {
                 name: 'Transmitindo',
-                value: ActivityType.Streaming.toString(),
+                value: 'STREAMING',
               },
-              { name: 'Ouvindo', value: ActivityType.Listening.toString() },
-              { name: 'Assistindo', value: ActivityType.Watching.toString() },
-              { name: 'Competindo', value: ActivityType.Competing.toString() },
+              { name: 'Ouvindo', value: 'LISTENING' },
+              { name: 'Assistindo', value: 'WATCHING' },
+              { name: 'Competindo', value: 'COMPETING' },
             ),
         )
         .addStringOption(option =>
@@ -110,8 +110,12 @@ export default (): CommandData => ({
     interaction: ChatInputCommandInteraction,
   ): Promise<any> {
     try {
-      if (!(await client.interactionModule.checkifUserIsDeveloper(interaction)))
+      const isDeveloper =
+        await client.interactionModule.checkifUserIsDeveloper(interaction);
+
+      if (!isDeveloper) {
         return;
+      }
 
       const subcommand = interaction.options.getSubcommand();
 
@@ -137,8 +141,19 @@ export default (): CommandData => ({
     } catch (error) {
       await client.loggerModule.error(
         'ActivityModule',
-        'Erro ao manipular as atividades',
+        `Erro ao manipular as atividades: ${error instanceof Error ? error.message : String(error)}`,
       );
+      console.error('Erro detalhado no comando activity:', error);
+
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction
+          .reply({
+            content:
+              '❌ Erro ao executar o comando. Verifique os logs para mais detalhes.',
+            flags: MessageFlags.Ephemeral,
+          })
+          .catch(() => {});
+      }
     }
   },
 });

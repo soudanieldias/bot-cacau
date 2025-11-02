@@ -14,7 +14,6 @@ export class InteractionModule {
       Events.InteractionCreate,
       async (interaction: Interaction) => {
         try {
-          // Select Menu Handling
           if (interaction.isStringSelectMenu()) {
             switch (interaction.customId) {
               case 'ticket-category-select':
@@ -32,7 +31,6 @@ export class InteractionModule {
             }
           }
 
-          // Buttons Handling
           if (interaction.isButton()) {
             switch (interaction.customId) {
               case 'ticket-open':
@@ -125,7 +123,6 @@ export class InteractionModule {
             }
           }
 
-          // Modal submission Handling
           if (interaction.isModalSubmit()) {
             switch (interaction.customId) {
               case 'ticket-modal':
@@ -162,7 +159,6 @@ export class InteractionModule {
             }
           }
 
-          // Slash Command Handling
           if (interaction.isChatInputCommand()) {
             const command = this.client.slashCommands.get(
               interaction.commandName,
@@ -261,7 +257,6 @@ export class InteractionModule {
 
   private async handleEmbedFields(interaction: any): Promise<void> {
     try {
-      // Verificar se a sessão existe
       const messageId = this.extractMessageIdFromInteraction(interaction);
       if (!messageId) {
         return await interaction.reply({
@@ -352,7 +347,6 @@ export class InteractionModule {
           flags: [MessageFlags.Ephemeral],
         });
 
-        // Limpar sessão
         this.client.embedSessions?.delete(messageId);
       }
     } catch (error) {
@@ -377,7 +371,6 @@ export class InteractionModule {
         });
       }
 
-      // Limpar sessão
       this.client.embedSessions?.delete(messageId);
 
       await interaction.reply({
@@ -420,7 +413,6 @@ export class InteractionModule {
         embedData = { fields: [] };
       }
 
-      // Processar valor baseado no campo
       switch (field) {
         case 'title':
           embedData.title = value || undefined;
@@ -457,6 +449,31 @@ export class InteractionModule {
       }
 
       this.client.embedSessions.set(messageId, embedData);
+
+      try {
+        const originalMessage = await this.findOriginalEmbedMessage(
+          interaction,
+          messageId,
+        );
+
+        if (originalMessage && originalMessage.editable) {
+          const updatedEmbed = this.buildEmbedFromData(embedData);
+
+          updatedEmbed.setFooter({ text: `Sessão: ${messageId}` });
+
+          const originalComponents = originalMessage.components || [];
+
+          await originalMessage.edit({
+            embeds: [updatedEmbed],
+            components: originalComponents,
+          });
+        }
+      } catch (updateError) {
+        this.client.loggerModule.warn(
+          'InteractionModule',
+          `Não foi possível atualizar a mensagem automaticamente: ${updateError}`,
+        );
+      }
 
       await interaction.reply({
         content: `✅ ${field.charAt(0).toUpperCase() + field.slice(1)} atualizado com sucesso!`,
@@ -507,6 +524,31 @@ export class InteractionModule {
       embedData.fields.push({ name, value, inline });
       this.client.embedSessions.set(messageId, embedData);
 
+      try {
+        const originalMessage = await this.findOriginalEmbedMessage(
+          interaction,
+          messageId,
+        );
+
+        if (originalMessage && originalMessage.editable) {
+          const updatedEmbed = this.buildEmbedFromData(embedData);
+
+          updatedEmbed.setFooter({ text: `Sessão: ${messageId}` });
+
+          const originalComponents = originalMessage.components || [];
+
+          await originalMessage.edit({
+            embeds: [updatedEmbed],
+            components: originalComponents,
+          });
+        }
+      } catch (updateError) {
+        this.client.loggerModule.warn(
+          'InteractionModule',
+          `Não foi possível atualizar a mensagem automaticamente: ${updateError}`,
+        );
+      }
+
       await interaction.reply({
         content: `✅ Campo "${name}" adicionado com sucesso!`,
         flags: [MessageFlags.Ephemeral],
@@ -544,6 +586,46 @@ export class InteractionModule {
     }
 
     return embed;
+  }
+
+  private async findOriginalEmbedMessage(
+    interaction: any,
+    messageId: string,
+  ): Promise<any> {
+    try {
+      if (interaction.message && interaction.message.editable) {
+        const embed = interaction.message.embeds[0];
+        if (embed?.footer?.text?.includes(messageId)) {
+          return interaction.message;
+        }
+      }
+
+      if (interaction.channel && interaction.channel.isTextBased()) {
+        const messages = await interaction.channel.messages.fetch({
+          limit: 50,
+        });
+
+        for (const [, message] of messages) {
+          if (
+            message.author.id === this.client.user?.id &&
+            message.embeds.length > 0
+          ) {
+            const embed = message.embeds[0];
+            if (embed.footer?.text?.includes(messageId)) {
+              return message;
+            }
+          }
+        }
+      }
+
+      return null;
+    } catch (error) {
+      this.client.loggerModule.warn(
+        'InteractionModule',
+        `Erro ao buscar mensagem original: ${error}`,
+      );
+      return null;
+    }
   }
 
   private extractMessageIdFromInteraction(interaction: any): string | null {
@@ -591,8 +673,9 @@ export class InteractionModule {
   ): Promise<boolean> {
     // Valores padrão/fallback
     const developerId = process.env['DEVELOPER_ID'] || '';
-    const enableDeveloperLock = (process.env['DEVELOPER_LOCK'] || 'false').toLowerCase() === 'true';
-    
+    const enableDeveloperLock =
+      (process.env['DEVELOPER_LOCK'] || 'false').toLowerCase() === 'true';
+
     // Se DEVELOPER_ID não estiver configurado, permite acesso (comportamento padrão permissivo)
     if (!developerId) {
       this.client.loggerModule?.warn(
@@ -612,7 +695,6 @@ export class InteractionModule {
           flags: MessageFlags.Ephemeral,
         });
       } else {
-        // Se lock não estiver ativo mas não for desenvolvedor, apenas retorna false silenciosamente
         this.client.loggerModule?.warn(
           'InteractionModule',
           `⚠️ Usuário ${interaction.user.tag} (${interaction.user.id}) tentou usar comando de desenvolvedor`,
